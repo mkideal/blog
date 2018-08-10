@@ -34,15 +34,15 @@
 				{% assign categories_list = site.categories %}
 				{% if categories_list.first[0] == null %}
 					{% for category in categories_list %}
-						<h2>
+						<h1>
 							{{ category }} ({{ site.tags[category].size }})
-						</h2>
+						</h1>
 					{% endfor %}
 				{% else %}
 					{% for category in categories_list %}
-						<h2>
+						<h1>
 							{{ category[0] }} ({{ category[1].size }})
-						</h2>
+						</h1>
 						<ul>
 						{% assign pages_list = category[1] %}
 						{% for post in pages_list %}
@@ -66,15 +66,15 @@
 				{% assign tags_list = site.tags %}
 				{% if tags_list.first[0] == null %}
 					{% for tag in tags_list %}
-						<h2>
+						<h1>
 							{{ tag }} ({{ site.tags[tag].size }})
-						</h2>
+						</h1>
 					{% endfor %}
 				{% else %}
 					{% for tag in tags_list %}
-						<h2>
+						<h1>
 							{{ tag[0] }} ({{ tag[1].size }})
-						</h2>
+						</h1>
 						<ul>
 						{% assign pages_list = tag[1] %}
 						{% for post in pages_list %}
