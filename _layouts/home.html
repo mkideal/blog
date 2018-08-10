@@ -47,7 +47,7 @@
 						{% for post in pages_list %}
 							{% if post.title != null %}
 								{% if group == null or group == post.group %}
-								<li><a href="{{ site.url }}{{ post.url }}"><h3>{{ post.title }} </h3><time datetime="{{ post.date | date_to_xmlschema }}" itemprop="datePublished" style="color: #9E9E9E; font-size: 0.8em">{{ post.date | date: "%Y/%m/%d %H:%M" }}</time></a></li>
+								<li><a href="{{ site.url }}{{ post.url }}">{{ post.title }} <time datetime="{{ post.date | date_to_xmlschema }}" itemprop="datePublished" style="color: #9E9E9E; font-size: 0.8em">{{ post.date | date: "%Y/%m/%d %H:%M" }}</time></a></li>
 								{% endif %}
 							{% endif %}
 						{% endfor %}
