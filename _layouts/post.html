@@ -29,12 +29,13 @@
 
 		<footer class="site-footer">
 			{% if page.previous.url %}
-			<a class="ui primary button" href="{{page.previous.url}}">Prev</a><span>{{page.previous.title}}</span>
-				<br/>
+				<a class="ui labeled icon primary button" href="{{page.previous.url}}" title="{{page.previous.title}}"><i class="left arrow icon"></i>Prev</a>
 			{% endif %}
 			{% if page.next.url %}
-				<a class="ui primary button" href="{{page.next.url}}">Next</a><span>{{page.next.title}}</span>
+				<a class="ui right labeled icon primary button" href="{{page.next.url}}" title="{{page.next.title}}">Next<i class="right arrow icon"></i></a>
 			{% endif %}
+
+			{% include disqus %}
 		</footer>
 
 		<footer class="site-footer">
