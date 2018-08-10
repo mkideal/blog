@@ -10,7 +10,7 @@
 	<meta name="theme-color" content="#157878">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
-
+	
 	{% include shared-deps.html %}
 </head>
 
@@ -20,8 +20,17 @@
 	</header>
 
 	<main id="content" class="main-content" role="main">
+		<h1>{{ page.title }}</h1>
+		<p style="color: #9E9E9E">
+			<span>Created at </span>
+			<span style="color: #8D6E63">{{ page.date  | date: "%Y/%m/%d %H:%M" }}</span>
+		</p>
 		{{ content }}
 
+		<footer class="site-footer">
+			<a class="ui primary button" href="/">Prev</a>
+			<a class="ui primary button" href="/">Next</a>
+		</footer>
 		<footer class="site-footer">
 			{% include shared-footer.html %}
 		</footer>
