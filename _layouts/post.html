@@ -23,14 +23,20 @@
 		<h1>{{ page.title }}</h1>
 		<p style="color: #9E9E9E">
 			<span>Created at </span>
-			<span style="color: #8D6E63">{{ page.date  | date: "%Y/%m/%d %H:%M" }}</span>
+			<span style="color: #8D6E63">{{ page.date | date: "%Y/%m/%d %H:%M" }}</span>
 		</p>
 		{{ content }}
 
 		<footer class="site-footer">
-			<a class="ui primary button" href="/">Prev</a>
-			<a class="ui primary button" href="/">Next</a>
+			{% if page.previous.url %}
+				<a href="{{page.previous.url}}">Prev: {{page.previous.title}}</a>
+				<br/>
+			{% endif %}
+			{% if page.next.url %}
+				<a href="{{page.previous.url}}">Next: {{page.next.title}}</a>
+			{% endif %}
 		</footer>
+
 		<footer class="site-footer">
 			{% include shared-footer.html %}
 		</footer>
