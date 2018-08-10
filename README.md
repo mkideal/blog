@@ -1,2 +1,3 @@
-Website of mkideal
-==================
+---
+layout: home
+---
