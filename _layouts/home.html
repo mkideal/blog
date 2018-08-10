@@ -22,10 +22,11 @@
 	<main id="content" class="main-content" role="main">
 		{{ content }}
 
-		<div class="ui three item stackable tabs menu">
-			<a class="active item" data-tab="tab-category">按类别排列</a>
+		<div class="ui four item stackable tabs menu">
+			<a class="active item" data-tab="tab-category">按类别排序</a>
 			<a class="item" data-tab="tab-date-desc">按日期倒序</a>
 			<a class="item" data-tab="tab-date">按日期顺序</a>
+			<a class="item" data-tab="tab-tag">按标签排序</a>
 		</div>
 
 		<div class="ui active tab" data-tab="tab-category">
@@ -77,6 +78,38 @@
 					<a href="{{ post.url }}"><h2>{{ post.title }} (FIXME:date)</h2></a>
 				</li>
 			  {% endfor %}
+			</ul>
+		</div>
+
+		<div class="ui tab" data-tab="tab-tag">
+			<ul>
+				{% assign tags_list = site.tags %}
+				{% if tags_list.first[0] == null %}
+					{% for tag in tags_list %}
+						<h2>
+							{{ tag }} ({{ site.tags[tag].size }})
+						</h2>
+					{% endfor %}
+				{% else %}
+					{% for tag in tags_list %}
+						<h2>
+							{{ tag[0] }} ({{ tag[1].size }})
+						</h2>
+						<ul>
+						{% assign pages_list = tag[1] %}
+						{% for post in pages_list %}
+							{% if post.title != null %}
+								{% if group == null or group == post.group %}
+								<li><a href="{{ site.url }}{{ post.url }}">{{ post.title }} <time datetime="{{ post.date | date_to_xmlschema }}" itemprop="datePublished" style="color: #9E9E9E; font-size: 0.8em">{{ post.date | date: "%Y/%m/%d %H:%M" }}</time></a></li>
+								{% endif %}
+							{% endif %}
+						{% endfor %}
+						{% assign pages_list = nil %}
+						{% assign group = nil %}
+						</ul>
+					{% endfor %}
+				{% endif %}
+				{% assign tags_list = nil %}
 			</ul>
 		</div>
 
