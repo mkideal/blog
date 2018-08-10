@@ -24,15 +24,47 @@
 
 		<div class="ui three item stackable tabs menu">
 			<a class="active item" data-tab="tab-category">按类别排列</a>
-			<a class="item" data-tab="tab-date">按日期顺序</a>
 			<a class="item" data-tab="tab-date-desc">按日期倒序</a>
+			<a class="item" data-tab="tab-date">按日期顺序</a>
 		</div>
 
 		<div class="ui active tab" data-tab="tab-category">
 			<ul>
+				{% assign categories_list = site.categories %}
+				{% if categories_list.first[0] == null %}
+					{% for category in categories_list %}
+						<h2>
+							{{ category | capitalize }} ({{ site.tags[category].size }})
+						</h2>
+					{% endfor %}
+				{% else %}
+					{% for category in categories_list %}
+						<h2>
+							{{ category[0] | capitalize }} ({{ category[1].size }})
+						</h2>
+						<ul>
+						{% assign pages_list = category[1] %}
+						{% for post in pages_list %}
+							{% if post.title != null %}
+								{% if group == null or group == post.group %}
+									<li><a href="{{ site.url }}{{ post.url }}">{{ post.title }} <time datetime="{{ post.date | date_to_xmlschema }}" itemprop="datePublished">{{ post.date | date: "%Y/%m/%d %H:%M" }}</time></a></li>
+								{% endif %}
+							{% endif %}
+						{% endfor %}
+						{% assign pages_list = nil %}
+						{% assign group = nil %}
+						</ul>
+					{% endfor %}
+				{% endif %}
+				{% assign categories_list = nil %}
+			</ul>
+		</div>
+
+		<div class="ui tab" data-tab="tab-date-desc">
+			<ul>
 			  {% for post in site.posts %}
 				<li>
-					<a href="{{ post.url }}"><h2>{{ post.title }} (FIXME:category)</h2></a>
+					<a href="{{ post.url }}"><h2>{{ post.title }} (FIXME:date-desc)</h2></a>
 				</li>
 			  {% endfor %}
 			</ul>
@@ -43,16 +75,6 @@
 			  {% for post in site.posts %}
 				<li>
 					<a href="{{ post.url }}"><h2>{{ post.title }} (FIXME:date)</h2></a>
-				</li>
-			  {% endfor %}
-			</ul>
-		</div>
-
-		<div class="ui tab" data-tab="tab-date-desc">
-			<ul>
-			  {% for post in site.posts %}
-				<li>
-					<a href="{{ post.url }}"><h2>{{ post.title }} (FIXME:date-desc)</h2></a>
 				</li>
 			  {% endfor %}
 			</ul>
