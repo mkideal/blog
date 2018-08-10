@@ -25,20 +25,20 @@
 			<span>Created at </span>
 			<span style="color: #8D6E63">{{ page.date | date: "%Y/%m/%d %H:%M" }}</span>
 			{% if page.previous.url %}
-				<a class="ui labeled icon primary button" href="{{page.previous.url}}" title="{{page.previous.title}}"><i class="left arrow icon"></i>Prev</a>
+				<a class="ui labeled icon primary button nav-button" href="{{page.previous.url}}" title="{{page.previous.title}}"><i class="left arrow icon"></i>Prev</a>
 			{% endif %}
 			{% if page.next.url %}
-				<a class="ui right labeled icon primary button" href="{{page.next.url}}" title="{{page.next.title}}">Next<i class="right arrow icon"></i></a>
+				<a class="ui right labeled icon primary button nav-button" href="{{page.next.url}}" title="{{page.next.title}}">Next<i class="right arrow icon"></i></a>
 			{% endif %}
 		</p>
 		{{ content }}
 
 		<footer class="site-footer">
 			{% if page.previous.url %}
-				<a class="ui labeled icon primary button" href="{{page.previous.url}}" title="{{page.previous.title}}"><i class="left arrow icon"></i>Prev</a>
+				<a class="ui labeled icon primary button nav-button" href="{{page.previous.url}}" title="{{page.previous.title}}"><i class="left arrow icon"></i>Prev</a>
 			{% endif %}
 			{% if page.next.url %}
-				<a class="ui right labeled icon primary button" href="{{page.next.url}}" title="{{page.next.title}}">Next<i class="right arrow icon"></i></a>
+				<a class="ui right labeled icon primary button nav-button" href="{{page.next.url}}" title="{{page.next.title}}">Next<i class="right arrow icon"></i></a>
 			{% endif %}
 
 			{% include disqus.html %}
@@ -50,7 +50,7 @@
 	</main>
 
 	<script>
-		$('.site-footer .button').popup({});
+		$('.nav-button').popup({});
 	</script>
 
 	{% include ga.js.temp %}
