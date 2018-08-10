@@ -22,18 +22,41 @@
 	<main id="content" class="main-content" role="main">
 		{{ content }}
 
-		<ul>
-		  {% for post in site.posts %}
-			<li>
-				<a href="{{ post.url }}"><h2>{{ post.title }}</h2></a>
-			</li>
-		  {% endfor %}
-		</ul>
+		<div class="ui two item stackable tabs menu">
+			<a class="active item" data-tab="tab-category">类别</a>
+			<a class="item" data-tab="tab-date">日期</a>
+		</div>
+
+		<div class="ui tab" data-tab="tab-category">
+			<ul>
+			  {% for post in site.posts %}
+				<li>
+					<a href="{{ post.url }}"><h2>{{ post.title }} (FIXME:category)</h2></a>
+				</li>
+			  {% endfor %}
+			</ul>
+		</div>
+
+		<div class="ui tab" data-tab="tab-date">
+			<ul>
+			  {% for post in site.posts %}
+				<li>
+					<a href="{{ post.url }}"><h2>{{ post.title }} (FIXME:date)</h2></a>
+				</li>
+			  {% endfor %}
+			</ul>
+		</div>
 
 		<footer class="site-footer">
 			{% include shared-footer.html %}
 		</footer>
 	</main>
+
+	<script>
+		$(function() {
+			$('.tabs.menu .item').tab();
+		});
+	</script>
 
 	{% include ga.js.temp %}
 </body>

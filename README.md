@@ -1,2 +1,2 @@
-Blog website mkideal
-====================
+Website of mkideal
+==================
