@@ -4,6 +4,11 @@ permalink: /:categories/:title:output_ext
 google_analytics: 'UA-77412491-1'
 google_ad_client: 'ca-pub-4848513853142926'
 
+email: i@mkideal.com
+facebook_username: mkideal.io
+twitter_username: mkideal
+wechat_id: mkideal
+github_username: mkideal
 disqus_username: mkideal
 
 markdown: kramdown
