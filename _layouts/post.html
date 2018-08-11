@@ -22,7 +22,6 @@
 	<main id="content" class="main-content" role="main">
 		<h1>{{ page.title }}</h1>
 		<p style="color: #9E9E9E">
-			<span>Created at </span>
 			<span style="color: #8D6E63">{{ page.date | date: "%Y/%m/%d %H:%M" }}</span>
 			{% if page.previous.url %}
 				<a class="tiny ui labeled icon primary button nav-button" href="{{page.previous.url}}" title="{{page.previous.title}}"><i class="left arrow icon"></i>Prev</a>
