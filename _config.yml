@@ -19,8 +19,5 @@ kramdown:
     block:
       line_numbers: true
 
-toc: true
-
 plugins:
   - jemoji
-  - jekyll-toc
