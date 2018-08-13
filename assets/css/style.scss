@@ -93,9 +93,17 @@
 .toc {
 	border: 1px solid #a2a9b1;
 	background-color: #f8f9fae8;
-	font-size: 125%;
+	font-size: 100%;
 	display: inline-block;
 	padding: 15px;
+}
+
+.toc ul {
+	margin-bottom: 0px;
+}
+
+.toctitle p {
+	text-align: center;
 }
 
 .overlay {
