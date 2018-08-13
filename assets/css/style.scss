@@ -98,3 +98,28 @@
 	padding: 15px;
 }
 
+.overlay {
+	margin: 0em 3em 1em 0em;
+}
+.overlay .toc {
+	position: relative;
+	left: 0;
+	transition: left 0.5s ease;
+}
+
+.toctogglelabel {
+    cursor: pointer;
+    color: #0645ad;
+}
+span.toctogglespan::before {
+	content: '[';
+}
+.toctogglecheckbox:not(:checked) + .toctitle .toctogglelabel:after {
+    content: '隐藏';
+}
+.toctogglecheckbox:checked + .toctitle .toctogglelabel:after {
+    content: '显示';
+}
+span.toctogglespan::after {
+	content: ']';
+}
