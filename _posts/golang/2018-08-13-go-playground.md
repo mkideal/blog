@@ -134,7 +134,7 @@ server {
 
 本文介绍了 2 种方法构建自己的 `go-playground` 平台。其中方法一仅仅只是做了一下代理，实际上还是用的 [play.golang.org][play-golang-org] 的服务；而方法二则是自己运行了一个 `playground` 的服务。
 
-本文作者使用方法一构建了一个 `go-playground`，地址为 [https://play.gopherd.com](https://play.gopherd.com/)。
+本文作者使用方法一构建了一个 `go-playground`，地址为 [https://play.gopherd.com](https://play.gopherd.com/)（请使用浏览器打开）。
 
 [go]: https://golang.org/ "Golang"
 [nginx]: https://www.nginx.com/ "Nginx"
