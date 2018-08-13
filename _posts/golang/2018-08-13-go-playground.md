@@ -14,7 +14,11 @@ title: "还在愁 play.golang.org 不能用？赶快建立自己的 playground"
 
 ## 方法一: 准备一台自己可以访问的 _香港_ 机器
 
-首先需要准备一台机器，这台机器可以被内地访问，同时也可以访问到 [play.golang.org][play-golang-org]。比如买国内的云厂商提供的香港机房的机器。买好机器后，安装 [nginx][nginx]，然后在 `nginx` 的配置文件目录 `/etc/nginx/conf.d/` 中新增一个配置文件 `go-playground.conf`，文件内容如下
+首先需要准备一台机器，这台机器可以被内地访问，同时也可以访问到 [play.golang.org][play-golang-org]。比如买国内的云厂商提供的香港机房的机器。
+
+### 安装并配置 nginx
+
+买好机器后，安装 [nginx][nginx]，然后在 `nginx` 的配置文件目录 `/etc/nginx/conf.d/` 中新增一个配置文件 `go-playground.conf`，文件内容如下
 
 ```
 server {
@@ -104,7 +108,7 @@ netstat -ln | grep 8080
 
 **注意**: 如果不想使用 `8080` 端口，比如想用 `8000` 端口，则将脚本中的 `-p 8080:8080` 改为 `-p 8000:8080`
 
-### 配置 nginx
+### 安装并配置 nginx
 
 [docker][docker] 容器启动成功后需要安装并配置 [nginx][nginx]，和方法一的配置文件稍有不同
 
