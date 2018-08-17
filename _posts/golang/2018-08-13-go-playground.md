@@ -4,7 +4,6 @@ date: 2018-08-13 16:18:16 +0800
 categories: golang
 tags: [go, playground]
 title: "还在愁 play.golang.org 不能用？赶快建立自己的 playground"
-githubissue: https://github.com/mkideal/blog/issues/1
 ---
 
 ## 摘要
