@@ -23,10 +23,16 @@
 		{{ content }}
 
 		<div class="ui four item stackable tabs menu">
-			<a class="active item" data-tab="tab-date-desc">按日期倒序</a>
-			<a class="item" data-tab="tab-category">按类别排序</a>
-			<a class="item" data-tab="tab-tag">按标签排序</a>
-			<a class="item" data-tab="tab-date">按日期顺序</a>
+			<a class="active item" data-tab="tab-date-desc">全部</a>
+			<a class="item" data-tab="tab-tag">标签分组</a>
+			{% assign categories_list = site.categories %}
+			{% if categories_list.first[0] != null %}
+				{% for category in categories_list %}
+					<a class="item" data-tab="tab-category-{{ category[0] }}">{{ category[0] }} ({{ category[1].size }})</a>
+					</ul>
+				{% endfor %}
+			{% endif %}
+			{% assign categories_list = nil %}
 		</div>
 
 		<div class="ui active tab" data-tab="tab-date-desc">
@@ -36,38 +42,6 @@
 					<a href="{{ post.url }}">{{ post.title }} <time datetime="{{ post.date | date_to_xmlschema }}" itemprop="datePublished" style="color: #9E9E9E; font-size: 0.8em">{{ post.date | date: "%Y/%m/%d %H:%M" }}</time></a>
 				</li>
 			  {% endfor %}
-			</ul>
-		</div>
-
-		<div class="ui tab" data-tab="tab-category">
-			<ul>
-				{% assign categories_list = site.categories %}
-				{% if categories_list.first[0] == null %}
-					{% for category in categories_list %}
-						<h1>
-							{{ category }} ({{ site.tags[category].size }})
-						</h1>
-					{% endfor %}
-				{% else %}
-					{% for category in categories_list %}
-						<h1>
-							{{ category[0] }} ({{ category[1].size }})
-						</h1>
-						<ul>
-						{% assign pages_list = category[1] %}
-						{% for post in pages_list %}
-							{% if post.title != null %}
-								{% if group == null or group == post.group %}
-								<li style="margin-bottom: 0.5em; font-size: 1.2em"><a href="{{ site.url }}{{ post.url }}">{{ post.title }} <time datetime="{{ post.date | date_to_xmlschema }}" itemprop="datePublished" style="color: #9E9E9E; font-size: 0.8em">{{ post.date | date: "%Y/%m/%d %H:%M" }}</time></a></li>
-								{% endif %}
-							{% endif %}
-						{% endfor %}
-						{% assign pages_list = nil %}
-						{% assign group = nil %}
-						</ul>
-					{% endfor %}
-				{% endif %}
-				{% assign categories_list = nil %}
 			</ul>
 		</div>
 
@@ -103,15 +77,26 @@
 			</ul>
 		</div>
 
-		<div class="ui tab" data-tab="tab-date">
-			<ul>
-			  {% for post in site.posts reversed %}
-				<li style="margin-bottom: 0.5em; font-size: 1.2em">
-					<a href="{{ post.url }}">{{ post.title }} <time datetime="{{ post.date | date_to_xmlschema }}" itemprop="datePublished" style="color: #9E9E9E; font-size: 0.8em">{{ post.date | date: "%Y/%m/%d %H:%M" }}</time></a>
-				</li>
-			  {% endfor %}
-			</ul>
-		</div>
+		{% assign categories_list = site.categories %}
+		{% if categories_list.first[0] != null %}
+			{% for category in categories_list %}
+				<div class="ui tab" data-tab="tab-category-{{ category[0] }}">
+					<ul>
+					{% assign pages_list = category[1] %}
+					{% for post in pages_list %}
+						{% if post.title != null %}
+							{% if group == null or group == post.group %}
+							<li style="margin-bottom: 0.5em; font-size: 1.2em"><a href="{{ site.url }}{{ post.url }}">{{ post.title }} <time datetime="{{ post.date | date_to_xmlschema }}" itemprop="datePublished" style="color: #9E9E9E; font-size: 0.8em">{{ post.date | date: "%Y/%m/%d %H:%M" }}</time></a></li>
+							{% endif %}
+						{% endif %}
+					{% endfor %}
+					{% assign pages_list = nil %}
+					{% assign group = nil %}
+					</ul>
+				</div>
+			{% endfor %}
+		{% endif %}
+		{% assign categories_list = nil %}
 
 		<footer class="site-footer">
 			{% include shared-footer.html %}
