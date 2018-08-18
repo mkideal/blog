@@ -4,6 +4,7 @@ date: 2018-08-17 16:01:25 +0800
 categories: snippet
 tags: [分词]
 title: 汉字音节表
+notoc: true
 ---
 
 ```

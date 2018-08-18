@@ -3,7 +3,7 @@ layout: post
 date: 2018-08-13 16:18:16 +0800
 categories: golang
 tags: [go, playground]
-title: "还在愁 play.golang.org 不能用？赶快建立自己的 playground"
+title: "建立自己的 go-playground 以代替 play.golang.org"
 ---
 
 ## 摘要
