@@ -12,16 +12,6 @@
 	}
 }
 
-	.main-content li {
-		font-size: 1.4rem;
-		line-height: 1.5em;
-	}
-
-	.main-content p {
-		line-height: 1.6em;
-	}
-//}
-
 .main-content h1 {
     color: #159957;
 	font-size: 3.0rem;
@@ -53,12 +43,21 @@
 	font-size: 1.45rem;
 }
 
+.main-content li {
+	font-size: 1.4rem;
+	line-height: 1.5em;
+}
+
+.main-content p {
+	line-height: 1.6em;
+}
+
 .highlight table td {
 	padding: 0.5rem 0.5rem;
 	border: 0px;
 }
 
-.main-content .rouge-code pre {
+.main-content pre {
     border: 0px;
 }
 
@@ -67,6 +66,37 @@
 	background-color: #fcfcfc;
 	border-radius: 0.25rem;
 }
+
+//---- post-content margin
+.post-content h3 {
+	margin-left: 1rem;
+}
+
+.post-content h4 {
+	margin-left: 1.3rem;
+}
+
+.post-content h5 {
+	margin-left: 1.6rem;
+}
+
+.post-content h6 {
+	margin-left: 1.8rem;
+}
+
+.post-content li{
+	margin-left: 2rem;
+}
+
+.post-content p {
+	margin-left: 2rem;
+}
+
+.post-content .highlighter-rouge {
+	margin-left: 2rem;
+}
+
+//----
 
 .project-avatar {
   margin-top: 0;
