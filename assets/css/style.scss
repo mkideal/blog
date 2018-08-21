@@ -12,6 +12,14 @@
 	}
 }
 
+.main-content pre {
+	font: 1rem Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+.main-content .highlight pre, .main-content pre {
+	font-size: 1rem;
+}
+
 .main-content h1 {
     color: #159957;
 	font-size: 3.0rem;
