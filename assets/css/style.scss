@@ -44,7 +44,6 @@
 }
 
 .main-content li {
-	font-size: 1.4rem;
 	line-height: 1.5em;
 }
 
@@ -62,9 +61,13 @@
 }
 
 .main-content code {
-	font-size: 1.3rem;
+	font-size: inherit;
 	background-color: #fcfcfc;
 	border-radius: 0.25rem;
+}
+
+pre.lineno {
+	color: rgba(27,31,35,0.25);
 }
 
 //---- post-content margin
@@ -94,6 +97,11 @@
 
 .post-content .highlighter-rouge div {
 	margin-left: 2rem;
+}
+
+.post-content div.highlight {
+	border: solid 1px #375EAB;
+	border-radius: 5px;
 }
 
 //----
