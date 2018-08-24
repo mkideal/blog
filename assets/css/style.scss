@@ -64,8 +64,14 @@
 	border: 0px;
 }
 
-.main-content pre {
+.main-content .rouge-code pre {
     border: 0px;
+	line-height: 1.8rem;
+}
+
+.main-content .rouge-gutter pre {
+    border: 0px;
+	line-height: 1.8rem;
 }
 
 .main-content code {
@@ -112,7 +118,7 @@ pre.lineno {
 	border-radius: 5px;
 }
 
-//----
+//---- post-content
 
 .project-avatar {
   margin-top: 0;
@@ -142,16 +148,21 @@ pre.lineno {
 	background-color: #f8f9fae8;
 	font-size: 100%;
 	display: inline-block;
-	padding: 15px;
+	padding: 10px;
 }
 
 .toc ul {
 	margin-bottom: 0px;
-	padding-left: 1.5rem;
+	padding-left: 3rem;
+	list-style-type: none;
 }
 
 .toctitle p {
 	text-align: center;
+}
+
+.toc-title-markup {
+	color: black;
 }
 
 .overlay {

@@ -24,10 +24,10 @@
 		<p style="color: #9E9E9E">
 			<span style="color: #8D6E63">{{ page.date | date: "%Y/%m/%d %H:%M" }}</span>
 			{% if page.previous.url %}
-				<a class="tiny ui labeled icon primary button nav-button" href="{{page.previous.url}}" title="{{page.previous.title}}"><i class="left arrow icon"></i>Prev</a>
+				<a class="tiny ui labeled icon button nav-button" href="{{page.previous.url}}" title="{{page.previous.title}}"><i class="left arrow icon"></i>Prev</a>
 			{% endif %}
 			{% if page.next.url %}
-				<a class="tiny ui right labeled icon primary button nav-button" href="{{page.next.url}}" title="{{page.next.title}}">Next<i class="right arrow icon"></i></a>
+				<a class="tiny ui right labeled icon button nav-button" href="{{page.next.url}}" title="{{page.next.title}}">Next<i class="right arrow icon"></i></a>
 			{% endif %}
 		</p>
 
@@ -74,13 +74,8 @@
 		$(function() {
 			$('.nav-button').popup({});
 
-			$('.main-content h2').each(function() {
-				var e = $(this);
-				e.html('§ ' + e.html());
-			});
 
 			function toccheckboxChanged(e) {
-				//console.log("toccheckboxChanged");
 				if(e.is(':checked')){
 					$('.toccontent').hide();
 				} else {
@@ -88,36 +83,27 @@
 				}
 			}
 
-			$('.overlay').visibility({
-				type: 'fixed',
-				offset: 20,
-				onTopVisible: function(calculations) {
-					console.log("onTopVisible");
-					// 如果原来是隐藏状态则改为显示
-					var e = $('#toctogglecheckbox');
-					if (e.is(':checked')) {
-						e.prop("checked", false);
-						toccheckboxChanged(e);
-					}
-				},
-				onBottomPassed: function(calculations) {
-					console.log("onBottomPassed");
-					// 如果原来是显示状态则改为隐藏
-					var e = $('#toctogglecheckbox');
-					if (!e.is(':checked')) {
-						e.prop("checked", true);
-						toccheckboxChanged(e);
-					}
-				},
-				onPassing: function(calculations) {
-					console.log("onPassing");
-					// 如果原来是显示状态则改为隐藏
-					var e = $('#toctogglecheckbox');
-					if (!e.is(':checked')) {
-					 	e.prop("checked", true);
-					 	toccheckboxChanged(e);
-					}
-				},
+			function tocMarkupHelper(ul, deeps) {
+				var count = 0;
+				ul.children("li").each(function() {
+					count++;
+					var li = $(this);
+					deeps.push(count);
+					li.children("a").each(function() {
+						var a = $(this);
+						var prepended = '<span class="toc-title-markup">' + deeps.join(".") + '</span>';
+						a.html(prepended + "&nbsp;&nbsp;" + a.html());
+					});
+					li.children("ul").each(function() {
+						tocMarkupHelper($(this), deeps.slice());
+					});
+					deeps.pop();
+				});
+			}
+
+			$(".toccontent").children("ul").each(function() {
+				$(this).css("padding-left", 0);
+				tocMarkupHelper($(this), []);
 			});
 
 			$('#toctogglecheckbox').change(function(){
