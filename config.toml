@@ -10,7 +10,7 @@ googleAnalytics = ""
   author = "mkideal"
   description = "mkideal's Blog"
   favicon = "favicon.ico"  # path to a .ico to use as favicon
-  logo = "/logo.svg"  # url or path to a logo to put in the header
+  logo = "/img/logo.svg"  # url or path to a logo to put in the header
   [params.footer]
     text = "By mkideal"
     url = "https://github.com/mkideal"
@@ -51,9 +51,14 @@ googleAnalytics = ""
     weight = 1
 
   [[menu.main]]
+    name = "工具"
+    url = "/tools"
+    weight = 2
+
+  [[menu.main]]
     name = "关于"
     url = "/about"
-    weight = 2
+    weight = 99
 
 [markup.goldmark.renderer]
   unsafe = true  # allow raw HTML in markdown files

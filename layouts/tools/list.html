@@ -8,7 +8,7 @@
         {{.Content}}
     </article>
     <ul>
-        {{ range first 50 (where .Site.AllRegularPages "Section" "posts") }}
+        {{ range where .Site.AllRegularPages "Section" "tools" }}
         {{ if not .Params.hideInList }}
         <!-- <li><a href="{{ .Permalink }}">{{ .Date.Format "2006-01-02" }} | {{ .Title }}</a></li> -->
         <div class="app-item app-item-content">
@@ -22,12 +22,6 @@
                 </div>
                 <div>
                     <p>
-                        <span class="app-item-content-meta">
-                            <span class="app-item-time">{{ .Date.Format "2006年1月2日" }}</span>
-                            {{ range .Params.keywords }}
-                            <span class="app-item-keyword badge"><i>{{ . }}</i></span>
-                            {{ end }}
-                        </span>
                         {{ .Params.abstract }}
                     </p>
                 </div>
