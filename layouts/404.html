@@ -1,8 +1,23 @@
 {{ define "main" }}
 <div class="container">
-	<meta http-equiv="refresh" content="5; URL={{ .Site.BaseURL }}" />
+	<meta http-equiv="refresh" content="3; URL={{ .Site.BaseURL }}" />
 	<article>
-		<strong>Page not found</strong>
+		<strong>Page not found! Redirecting to homepage after <span id="redirect_countdown">3</span>s.</strong>
     </article>
+	<script>
+		document.addEventListener('DOMContentLoaded', (event) => {
+			var countdown = 3;
+			var elem = document.getElementById("redirect_countdown");
+			elem.innerText = countdown + "";
+			var tid = setInterval(function() {
+				countdown--;
+				if (countdown < 0) {
+					clearInterval(tid);
+					return;
+				}
+				elem.innerText = countdown + "";
+			}, 1000);
+		});
+	</script>
 </div>
 {{ end }}
