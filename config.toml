@@ -3,7 +3,7 @@ languageCode = 'zh-cn'
 title = "Home"
 theme = "researcher"
 enableEmoji = true
-math = false
+math = true
 googleAnalytics = ""
 
 [params]
