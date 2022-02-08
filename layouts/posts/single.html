@@ -4,7 +4,7 @@
 </div>
 
 {{ if .Site.Params.utteranc.enable }}
-<script src="{{ .Site.BaseURL }}/js/lib/utterances.client.js" repo="{{ .Site.Params.utteranc.repo }}"
+<script src="https://utteranc.es/client.js" repo="{{ .Site.Params.utteranc.repo }}"
     issue-number="{{ .Page.RelPermalink }}" theme="github-light" crossorigin="anonymous" async>
     </script>
 {{ end }}
