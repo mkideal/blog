@@ -2,14 +2,15 @@
 <div class="container">
 	<meta http-equiv="refresh" content="3; URL={{ .Site.BaseURL }}" />
 	<article>
-		<strong style="font-size: 2em">404</strong> <span>Page not found (<span id="redirect_countdown">3</span>s)</span>
-    </article>
+		<strong style="font-size: 6em">404</strong> <span>Page not found (<span
+				id="redirect_countdown">3</span>s)</span>
+	</article>
 	<script>
 		document.addEventListener('DOMContentLoaded', (event) => {
 			var countdown = 3;
 			var elem = document.getElementById("redirect_countdown");
 			elem.innerText = countdown + "";
-			var tid = setInterval(function() {
+			var tid = setInterval(function () {
 				countdown--;
 				if (countdown < 0) {
 					clearInterval(tid);

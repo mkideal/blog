@@ -11,9 +11,7 @@ googleAnalytics = ""
   description = "mkideal's Blog"
   favicon = "favicon.ico"  # path to a .ico to use as favicon
   logo = "/img/logo.svg"  # url or path to a logo to put in the header
-  [params.footer]
-    text = "By mkideal"
-    url = "https://github.com/mkideal"
+
   [params.style]  # appearance options (can be omitted)
     fontFamily = "Inconsolata"
     pageWidth = "750px"
