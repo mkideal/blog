@@ -20,6 +20,13 @@ googleAnalytics = ""
     avatarSize = "90px"
     colorBlack = "#222222"
     colorRed = "#dc3545"
+
+  [params.utteranc]
+    enable = true
+    repo = "mkideal/blog"
+    issueTerm = "pathname"
+    theme = "github-light"
+
   [[params.socialIcons]]
     icon = "fab fa-github"
     title = "GitHub"
