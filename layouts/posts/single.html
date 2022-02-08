@@ -4,8 +4,9 @@
 </div>
 
 {{ if .Site.Params.utteranc.enable }}
-<script src="https://utteranc.es/client.js" repo="{{ .Site.Params.utteranc.repo }}"
-    issue-number="{{ .Page.RelPermalink }}" theme="github-light" crossorigin="anonymous" async>
+<hr />
+<script src="https://utteranc.es/client.js" repo="{{ .Site.Params.utteranc.repo }}" issue-term="pathname"
+    theme="github-light" crossorigin="anonymous" async>
     </script>
 {{ end }}
 
