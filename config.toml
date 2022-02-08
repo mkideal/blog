@@ -1,0 +1,42 @@
+baseURL = 'https://gopherd.com/'
+languageCode = 'zh-cn'
+title = "Home"
+theme = "researcher"
+enableEmoji = true
+math = false
+googleAnalytics = ""
+
+[params]
+  author = "mkideal"
+  description = "mkideal's Blog"
+  favicon = "favicon.ico"  # path to a .ico to use as favicon
+  logo = ""  # url or path to a logo to put in the header
+  [params.footer]
+    text = "By mkideal"
+    url = "https://github.com/mkideal"
+  [params.style]  # appearance options (can be omitted)
+    fontFamily = "Inconsolata"
+    pageWidth = "750px"
+    avatarSize = "90px"
+    colorBlack = "#222222"
+    colorRed = "#dc3545"
+  [[params.socialIcons]]
+    icon = "fab fa-twitter"
+    title = "Twitter"
+    url = "https://twitter.com/mkideal"
+  [[params.socialIcons]]
+    icon = "fas fa-envelope"
+    title = "E-mail"
+    url = "mailto:i@mkideal.com"
+
+[permalinks]
+  "/" = "/:filename"
+
+[menu]
+  [[menu.main]]
+    name = "About"
+    url = "/about"
+    weight = 1
+
+[markup.goldmark.renderer]
+  unsafe = true  # allow raw HTML in markdown files
