@@ -11,7 +11,7 @@ a {
     text-align: center;
     border: solid 1px #0166aa;
     /*background: #91cff8;*/
-    color: #fefefe;
+    /*color: #fefefe;*/
 }
 
 #content a * {
@@ -31,7 +31,14 @@ a {
     position: relative;
     width: 90%;
     max-width: 800px;
-    margin: 0px auto;
+    margin: 12px auto;
+	border-radius: 0.25rem;
+	box-shadow: #f0f1f2 0 1px 1px 0, #f0f1f2 0 1px 1px 1px;
+}
+
+.app-item-content:hover {
+    box-shadow: rgb(60 64 67 / 15%) 0 1px 2px 0, rgb(60 64 67 / 10%) 0 1px 3px 1px;
+	transition: box-shadow 0.2s ease-in-out;
 }
 
 .app-item-content-details {
@@ -39,7 +46,7 @@ a {
     flex: 1;
     flex-direction: column;
     min-width: 0;
-    padding: 8px;
+    padding: 16px;
 }
 
 .app-item-content-header {
