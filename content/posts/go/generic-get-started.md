@@ -60,7 +60,7 @@ go1.18beta2 download
 
 仍以求和函数为例，泛型版本的写法如下：
 
-```go {hl_lines=[7]}
+```go
 package main
 
 import (
@@ -128,7 +128,13 @@ func Sum[T constraints.Integer | constraints.Float | constraints.Complex](values
 `Sum` 函数的例子只用了一个类型参数，go 的类型参数也支持多个，这个定义和函数参数的格式类似。
 
 ```go
-func Fn[T any, U comparable]() {}
+func FuncA[T, U any]() {
+	// ...
+}
+
+func FuncB[T any, U, V comparable]() {
+	// ...
+}
 ```
 
 接下来通过几个简单的例子熟练一下泛型函数的使用。
@@ -162,9 +168,9 @@ func createString() string {
 
 > javascript 中的 `a || b()` 不同于此处的 `Or(a, b())`，前者在 a 非空时不会调用函数 b
 
-可以再实现一个延迟函数调用的版本处理这种情况：
+可以再实现一个延迟函数调用的版本 `OrNew` 处理这种情况：
 
-```go
+```go {hl_lines=["9-15",20]}
 func Or[T any](a, b T) T {
 	var zero T
 	if a == zero {
@@ -507,5 +513,3 @@ func main() {
 * 普通基础类型用作类型参数约束
 * 参数类型约束没有成员方被调用
 * 对性能没有极致要求
-
-_(完)_
