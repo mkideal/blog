@@ -79,5 +79,5 @@ googleAnalytics = ""
     lineNos = true
     lineNumbersInTable = false
     noClasses = true
-    style = 'github'
+    style = 'pygments'
     tabWidth = 4
