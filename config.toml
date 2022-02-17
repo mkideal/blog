@@ -14,7 +14,7 @@ googleAnalytics = ""
 
   [params.style]  # appearance options (can be omitted)
     fontFamily = "Inconsolata"
-    pageWidth = "750px"
+    pageWidth = "900px"
     avatarSize = "90px"
     colorBlack = "#222222"
     colorRed = "#dc3545"
@@ -79,5 +79,5 @@ googleAnalytics = ""
     lineNos = true
     lineNumbersInTable = false
     noClasses = true
-    style = 'vs'
+    style = 'github'
     tabWidth = 4
