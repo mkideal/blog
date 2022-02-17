@@ -2,7 +2,7 @@
 title: "Go 泛型初步"
 date: 2022-02-12
 toc: true
-keywords: ["go", "generic", "type parameters"]
+keywords: ["go", "generic", "type parameter"]
 abstract: "Go 1.18 版本之后正式引入泛型，它被称作类型参数（type parameters），本文初步介绍 Go 中泛型的使用。"
 ---
 
@@ -315,7 +315,7 @@ type PureString interface {
 type Name string
 ```
 
-go 1.18 开始引入一个新的符号 `~` 用于针对基础类型定义的约束，这表示该约束包含 underlying 为该类型的参数。比如上面的 `Name` 类型的 underlying 是 string，所以 `Name` 也满足 `String` 约束，但是不满足 `PureString` 约束。
+go 1.18 开始引入一个新的符号 `~` 用于约束前缀，这表示该约束包含 underlying 为该类型的参数。比如上面的 `Name` 类型的 underlying 是 string，所以 `Name` 也满足 `String` 约束，但是不满足 `PureString` 约束。
 
 ### 4.2. 实现一个通用的事件系统
 

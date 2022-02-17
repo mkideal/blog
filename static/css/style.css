@@ -6,8 +6,8 @@ a {
 .badge {
     display: inline-block;
     min-width: 16px; /* pixel unit */
-    padding: 2px 6px; /* pixel unit */
-    border-radius: 16px;
+    padding: 0px 10px; /* pixel unit */
+    border-radius: 12px;
     text-align: center;
     border: solid 1px #0166aa;
     /*background: #91cff8;*/
@@ -41,12 +41,16 @@ a {
 	transition: box-shadow 0.2s ease-in-out;
 }
 
-.app-item-content-details {
+#content .app-item-content-details {
     display: flex;
     flex: 1;
     flex-direction: column;
     min-width: 0;
     padding: 16px;
+}
+
+#content .app-item-content-details p {
+	margin: 0 0;
 }
 
 .app-item-content-header {
@@ -59,17 +63,23 @@ a {
     padding: 0px;
 }
 
+.app-item-content-header-title {
+    max-width: calc(100% - 150px);
+    padding: 0px;
+}
+
 .app-item-time {
     color: grey;
 }
 
-.app-item-content-header-title-h {
+#content .app-item-content-header-title-h {
     width: 100%;
     display: inline-block;
     word-break: normal;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+	margin: 0 0;
 }
 
 .app-item-keyword {

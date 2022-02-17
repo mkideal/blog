@@ -16,7 +16,7 @@
                 <div class="app-item-content-header">
                     <div class="app-item-content-header-title">
                         <a href="{{ .Permalink }}">
-                            <h2 class="app-item-content-header-title-h">{{ .Title }}</h2>
+                            <h3 class="app-item-content-header-title-h">{{ .Title }}</h3>
                         </a>
                     </div>
                 </div>
@@ -24,9 +24,6 @@
                     <p>
                         <span class="app-item-content-meta">
                             <span class="app-item-time">{{ .Date.Format "2006年1月2日" }}</span>
-                            {{ range .Params.keywords }}
-                            <span class="app-item-keyword badge"><i>{{ . }}</i></span>
-                            {{ end }}
                         </span>
                         {{ .Params.abstract }}
                     </p>
