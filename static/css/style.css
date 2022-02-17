@@ -20,7 +20,7 @@ a {
 }
 
 #content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
-    margin: 0;
+    margin: 1rem 0;
 }
 
 .app-item-content {
