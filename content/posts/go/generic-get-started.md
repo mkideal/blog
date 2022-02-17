@@ -14,7 +14,6 @@ abstract: "Go 1.18 版本之后正式引入泛型，它被称作类型参数（t
 
 ```go
 // Sum 函数尝试对输入的任意多个参数求和。
-//
 // 然而 interface{} 不可以做加法，这段代码是不能编译的
 func Sum(values ...interface{}) interface{} {
 	var sum interface{}
@@ -61,7 +60,7 @@ go1.18beta2 download
 
 仍以求和函数为例，泛型版本的写法如下：
 
-```go
+```go {hl_lines=[7]}
 package main
 
 import (
@@ -108,7 +107,7 @@ func main() {
 
 这个版本仍有一些问题，比如可以做加法的不止整数啊，还有浮点数，甚至是复数。修改类型参数 `T` 的约束来支持浮点数和复数：
 
-```go
+```go {hl_lines=[7]}
 package main
 
 import (
@@ -199,14 +198,14 @@ func createString() string {
 go 语言不存在三元条件运算符 `<condition>? value1 : value2`，导致经常存在需要这种场景时只好用 `if` 写好几行的代码，不过现在可以通过泛型实现一个条件运算了。
 
 ```go
-func Conditional[T any](yes bool, a, b T) T {
+func If[T any](yes bool, a, b T) T {
 	if yes {
 		return a
 	}
 	return b
 }
 
-func ConditionalNew[T any](yes bool, a, b func() T) T {
+func IfNew[T any](yes bool, a, b func() T) T {
 	if yes {
 		return a()
 	}
@@ -214,8 +213,8 @@ func ConditionalNew[T any](yes bool, a, b func() T) T {
 }
 
 func doSomething(a, b bool) {
-	var x = Conditional(a, 1, 2)
-	var y = ConditionalNew(b, createA, createB)
+	var x = If(a, 1, 2)
+	var y = IfNew(b, createA, createB)
 	// ...
 }
 
@@ -310,7 +309,7 @@ type PureString interface {
 type Name string
 ```
 
-go 1.18 开始引入一个新的符号 `~` 用于针对基础类型定义的约束，这表示该约束包含 Underlying 为该类型的参数。比如上面的 `Name` 类型的 underlying 是 string，所以 `Name` 也满足 `String` 约束，但是不满足 `PureString` 约束。
+go 1.18 开始引入一个新的符号 `~` 用于针对基础类型定义的约束，这表示该约束包含 underlying 为该类型的参数。比如上面的 `Name` 类型的 underlying 是 string，所以 `Name` 也满足 `String` 约束，但是不满足 `PureString` 约束。
 
 ### 4.2. 实现一个通用的事件系统
 
@@ -336,7 +335,7 @@ type Event[T comparable] interface {
 
 然后定一个事件处理接口 `Listener`，同时为了使用方便实现一个内置的 listener
 
-```go
+```go {hl_lines=["8-10"]}
 // Listener 接口用于处理被触发的事件
 type Listener[T comparable] interface {
 	EventType() T
@@ -366,10 +365,10 @@ func (h listenerFunc[T, E]) Handle(event Event[T]) {
 }
 ```
 
-上面这段代码需要特别说明一下 `Listen` 函数，该函数有 2 个类型参数 `T` 和 `E`，前者是事件类别的类型参数，后者是事件类型参数，而 `E` 的约束 `Event[T]` 中依赖了前一个泛型参数，这样以来事件处理函数 `handler` 的参数就不再是 `Event` 接口而是一个泛型参数了，这避免了每次在回调函数中进行一次类型转换（因为已经统一在 listenerFunc.Handle 中转换了）。比如以前经常是这样写回调函数
+上面这段代码需要特别说明一下 `Listen` 函数，该函数有 2 个类型参数 `T` 和 `E`，前者是事件类别的类型参数，后者是事件类型参数，而 `E` 的约束 `Event[T]` 中依赖了前一个泛型参数，这样一来事件处理函数 `handler` 的参数就不再是 `Event` 接口而是一个泛型参数了，这避免了每次在回调函数中进行一次类型转换（因为已经统一在 listenerFunc.Handle 中转换了）。比如以前经常是这样写回调函数
 
 ```go
-func onSomething(event Event) {
+func onSomething(event Event) error {
 	somethingEvent, ok := event.(*SomethingEvent)
 	if !ok {
 		return errors.New("unexpected event type")
@@ -381,7 +380,7 @@ func onSomething(event Event) {
 而现在回调函数就可以避免每次手动转换类型了
 
 ```go
-func onSomething(event *SomethingEvent) {
+func onSomething(event *SomethingEvent) error {
 	// doSomething with event
 }
 ```
