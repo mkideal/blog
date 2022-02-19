@@ -144,7 +144,7 @@ func FuncB[T any, U, V comparable]() {
 这个例子用于判定 `a` 是否为 zero 值，如果是则返回 `b`，反之返回 `a`。
 
 ```go
-func Or[T any](a, b T) T {
+func Or[T comparable](a, b T) T {
 	var zero T
 	if a == zero {
 		return b
@@ -171,7 +171,7 @@ func createString() string {
 可以再实现一个延迟函数调用的版本 `OrNew` 处理这种情况：
 
 ```go {hl_lines=["9-15",20]}
-func Or[T any](a, b T) T {
+func Or[T comparable](a, b T) T {
 	var zero T
 	if a == zero {
 		return b
@@ -179,7 +179,7 @@ func Or[T any](a, b T) T {
 	return a
 }
 
-func OrNew[T any](a T, new func()T) T {
+func OrNew[T comparable](a T, new func()T) T {
 	var zero T
 	if a == zero {
 		return new()
