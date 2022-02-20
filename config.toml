@@ -80,9 +80,3 @@ googleAnalytics = ""
 		noClasses = true
 		style = 'pygments'
 		tabWidth = 4
-
-[playground]
-	[playground.go]
-		api = 'https://gotipplay.golang.org/compile'
-		version = 2
-		withVet = true
