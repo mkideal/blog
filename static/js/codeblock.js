@@ -160,7 +160,7 @@ function addCopyButton(parentNode, codeBlock, clipboard) {
 	var copyIcon = '<i class="fas fa-copy"></i>';
 	var copiedIcon = '<i class="fas fa-check" style="color: #32CD32"></i>';
 	var button = document.createElement("button");
-	button.className = "btn btn-light btn-clipboard";
+	button.className = "btn btn-light btn-code";
 	button.type = "button";
 	button.innerHTML = copyIcon;
 	button.addEventListener("click", function() {
