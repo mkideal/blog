@@ -83,5 +83,27 @@ a {
 }
 
 .app-item-keyword {
-    
+}
+
+.code-button-container {
+  position: absolute;
+  right: 0;
+  margin: 1rem;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 10px;
+}
+
+.btn-code {
+  font-size: 0.8em;
+  z-index: 1;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.btn-clipboard {
+}
+
+.highlight {
+  position: relative;
 }

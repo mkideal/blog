@@ -7,77 +7,82 @@ math = true
 googleAnalytics = ""
 
 [params]
-  author = "mkideal"
-  description = "mkideal's Blog"
-  favicon = "favicon.ico"  # path to a .ico to use as favicon
-  logo = "/img/logo.svg"  # url or path to a logo to put in the header
+	author = "mkideal"
+	description = "mkideal's Blog"
+	favicon = "favicon.ico"  # path to a .ico to use as favicon
+	logo = "/img/logo.svg"  # url or path to a logo to put in the header
 
-  [params.style]  # appearance options (can be omitted)
-    fontFamily = "Inconsolata"
-    pageWidth = "900px"
-    avatarSize = "90px"
-    colorBlack = "#222222"
-    colorRed = "#dc3545"
+	[params.style]  # appearance options (can be omitted)
+		fontFamily = "Inconsolata"
+		pageWidth = "900px"
+		avatarSize = "90px"
+		colorBlack = "#222222"
+		colorRed = "#dc3545"
 
-  [params.utteranc]
-    enable = true
-    repo = "mkideal/blog"
-    issueTerm = "pathname"
-    theme = "github-light"
+	[params.utteranc]
+		enable = true
+		repo = "mkideal/blog"
+		issueTerm = "pathname"
+		theme = "github-light"
 
-  [[params.socialIcons]]
-    icon = "fab fa-github"
-    title = "GitHub"
-    url = "https://github.com/mkideal"
-  [[params.socialIcons]]
-    icon = "fab fa-twitter"
-    title = "Twitter"
-    url = "https://twitter.com/mkideal"
-  [[params.socialIcons]]
-    icon = "fab fa-facebook"
-    title = "Facebook"
-    url = "https://facebook.com/mkideal.io"
-#[[params.socialIcons]]
-#icon = "fab fa-weixin"
-#title = "WeChat"
-#url = "https://TODO"
-  [[params.socialIcons]]
-    icon = "fas fa-envelope"
-    title = "E-mail"
-    url = "mailto:i@mkideal.com"
+	[[params.socialIcons]]
+		icon = "fab fa-github"
+		title = "GitHub"
+		url = "https://github.com/mkideal"
+	[[params.socialIcons]]
+		icon = "fab fa-twitter"
+		title = "Twitter"
+		url = "https://twitter.com/mkideal"
+	[[params.socialIcons]]
+		icon = "fab fa-facebook"
+		title = "Facebook"
+		url = "https://facebook.com/mkideal.io"
+	#[[params.socialIcons]]
+		#icon = "fab fa-weixin"
+		#title = "WeChat"
+		#url = "https://TODO"
+	[[params.socialIcons]]
+		icon = "fas fa-envelope"
+		title = "E-mail"
+		url = "mailto:i@mkideal.com"
 
 [permalinks]
-  "/" = "/:filename"
+	"/" = "/:filename"
 
 [menu]
-  [[menu.main]]
-    name = "首页"
-    url = "/"
-    weight = 1
+	[[menu.main]]
+		name = "首页"
+		url = "/"
+		weight = 1
 
-  [[menu.main]]
-    name = "工具"
-    url = "/tools"
-    weight = 2
+	[[menu.main]]
+		name = "工具"
+		url = "/tools"
+		weight = 2
 
-  [[menu.main]]
-    name = "关于"
-    url = "/about"
-    weight = 99
-
-[markup.goldmark.renderer]
-  unsafe = true  # allow raw HTML in markdown files
+	[[menu.main]]
+		name = "关于"
+		url = "/about"
+		weight = 99
 
 [markup]
-  [markup.highlight]
-    anchorLineNos = false
-    codeFences = true
-    guessSyntax = false
-    hl_Lines = ''
-    lineAnchors = ''
-    lineNoStart = 1
-    lineNos = false
-    lineNumbersInTable = false
-    noClasses = true
-    style = 'pygments'
-    tabWidth = 4
+	[markup.goldmark.renderer]
+		unsafe = true  # allow raw HTML in markdown files
+	[markup.highlight]
+		anchorLineNos = false
+		codeFences = true
+		guessSyntax = false
+		hl_Lines = ''
+		lineAnchors = ''
+		lineNoStart = 1
+		lineNos = false
+		lineNumbersInTable = false
+		noClasses = true
+		style = 'pygments'
+		tabWidth = 4
+
+[playground]
+	[playground.go]
+		api = 'https://gotipplay.golang.org/compile'
+		version = 2
+		withVet = true
