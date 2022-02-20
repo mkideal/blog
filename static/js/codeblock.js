@@ -216,6 +216,7 @@ function addRunButton(parentNode, codeBlock) {
 	button.innerHTML = runIcon;
 	button.addEventListener("click", function() {
 		button.innerHTML = runningIcon;
+		clearCodeResult(codeBlock);
 		runCodeGroup(group, id).then(
 			function(res) {
 				if (res.Errors) {
@@ -272,13 +273,20 @@ function runCodeGroup(group, id) {
 	});
 }
 
+var codeResultClassName = "code-result";
+
+function clearCodeResult(codeBlock) {
+	var child = codeBlock.parentNode.parentNode.querySelector("." + codeResultClassName);
+	if (child) {
+		codeBlock.parentNode.parentNode.removeChild(child);
+	}
+}
+
 function createCodeResult(codeBlock, results) {
 	console.log("results", results);
-	var child = codeBlock.querySelector(".code-result");
-	if (child) {
-		codeBlock.removeChild(child);
-	}
-	child = document.createElement("pre");
+	clearCodeResult(codeBlock);
+	var child = document.createElement("pre");
+	child.className = codeResultClassName;
 	var code = document.createElement("code");
 	child.appendChild(code);
 	code.insertAdjacentHTML('beforeend', '<span style="color:grey">Output:\n</span>');
