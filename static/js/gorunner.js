@@ -50,7 +50,7 @@ GoRunner.prototype.run = function() {
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', playground.run);
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-			var data = codeblock.buildFormParameters({
+			var data = codeblock.encodeObjectURI({
 				body: self.source,
 				version: playground.version,
 				withVet: playground.withVet
@@ -67,7 +67,7 @@ GoRunner.prototype.format = function() {
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', playground.format);
 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	return codeblock.sendRequest(xhr, codeblock.buildFormParameters({
+	return codeblock.sendRequest(xhr, codeblock.encodeObjectURI({
 		imports: "true",
 		body: this.source,
 	}));
