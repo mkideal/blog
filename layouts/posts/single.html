@@ -8,26 +8,24 @@
         </header>
 
 		{{ if .Params.keywords }}
-		<p>
-			<strong>关键词: </strong>
+		<div>
+			<span>关键词: </span>
 			{{ range .Params.keywords }}
 			<span class="app-item-keyword badge"><i>{{ . }}</i></span>
 			{{ end }}
-		</p>
+		</div>
 		{{ end }}
         {{if .Params.abstract}}
 		<div>
-			<strong>摘&nbsp;&nbsp;要: </strong>
+			<span>摘&nbsp;&nbsp;要:</span>
 			<i style="color: grey">{{.Params.abstract}}</i>
-			<br />
 		</div>
 		{{ end }}
 
-        <br />
 		{{ if .Params.toc }}
 		<aside>
+			<span>目&nbsp;&nbsp;录:</span>
 			{{ .TableOfContents }}
-			<br/>
 		</aside>
 		{{ end }}
 
