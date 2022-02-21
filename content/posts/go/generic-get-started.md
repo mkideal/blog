@@ -60,7 +60,7 @@ go1.18beta2 download
 
 仍以求和函数为例，泛型版本的写法如下：
 
-```go {code-block="sum" hl_lines=[4]}
+```go {code-block="sum" hl_lines=[5]}
 import (
 	"golang.org/x/exp/constraints"
 )
@@ -88,13 +88,13 @@ func Sum[T constraints.Integer](values ...T) T {
 func main() {
 	fmt.Println(Sum(1, 2, 3))
 
-	var ints = []int{1, 2,3} 
+	var ints = []int{1, 2,3}
 	fmt.Println(Sum(ints...))
 
-	var int32s = []int32{-1, 2,3} 
+	var int32s = []int32{-1, 2,3}
 	fmt.Println(Sum(int32s...))
 
-	var uint32s = []uint32{1, 2,3} 
+	var uint32s = []uint32{1, 2,3}
 	fmt.Println(Sum(uint32s...))
 
 	// 调用 Sum 函数时也可以将类型参数带上，只是经常都能够通过实际参数
@@ -105,7 +105,7 @@ func main() {
 
 这个版本仍有一些问题，比如可以做加法的不止整数啊，还有浮点数，甚至是复数。修改类型参数 `T` 的约束来支持浮点数和复数：
 
-```go {code-block="sum2:run" hl_lines=[7]}
+```go {code-block="sum2:run" hl_lines=[5]}
 import (
 	"golang.org/x/exp/constraints"
 )
@@ -517,9 +517,3 @@ func main() {
 * 普通基础类型用作类型参数约束
 * 参数类型约束没有成员方被调用
 * 对性能没有极致要求
-
-```rust {code-block=":run"}
-fn main() {
-    println!("Hello, world!");
-}
-```
