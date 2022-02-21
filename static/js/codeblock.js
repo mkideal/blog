@@ -97,9 +97,12 @@ exports.sendRequest = function(xhr, data) {
 				reject(xhr.statusText);
 			}
 		};
-		xhr.onerror = function () {
-			reject(xhr.statusText);
+		xhr.onerror = function (e) {
+			reject("Network error");
 		};
+		xhr.ontimeout = function (e) {
+			reject("Network timeout");
+		}
 		xhr.send(data);
     });
 }
