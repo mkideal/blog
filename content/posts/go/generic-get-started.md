@@ -517,3 +517,9 @@ func main() {
 * 普通基础类型用作类型参数约束
 * 参数类型约束没有成员方被调用
 * 对性能没有极致要求
+
+```rust {code-block=":run"}
+fn main() {
+    println!("Hello, world!");
+}
+```

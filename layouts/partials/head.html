@@ -31,7 +31,10 @@
 
 	{{ if (findRE "<pre" .Content 1) }}
 	<script src="/js/codeblock.js"></script>
-	<script src="/js/gorunner.js"></script>
+	<script src="/js/runner/go.js"></script>
+	<script src="/js/runner/rust.js"></script>
+	<script src="/js/runner/lua.js"></script>
+	<script src="/js/runner/other.js"></script>
 	<script>
 		codeblock.init();
 	</script>

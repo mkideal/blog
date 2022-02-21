@@ -1,10 +1,9 @@
 (function() {
-
+/**
+ * go code runner
+ */
 var rootURL = "https://gotipplay.golang.org";
 
-/**
- * playground 配置 go 语言的运行环境
- */
 var playground = {
 	run: rootURL + '/compile',
 	format: rootURL + '/fmt',
@@ -12,17 +11,15 @@ var playground = {
 	withVet: true
 };
 
-/**
- * Go 代码运行器
- */
-function GoRunner() {
+function Runner(lang) {
+	this.lang = lang;
 	this.source = null;
 }
 
 /**
- * 实现 Runner.parse 方法
+ * implements Runner.parse method
  */
-GoRunner.prototype.parse = function(blocks) {
+Runner.prototype.parse = function(blocks) {
 	var source = [];
 	var regexp = /package main/g;
 	source.push('package main\n');
@@ -34,18 +31,18 @@ GoRunner.prototype.parse = function(blocks) {
 };
 
 /**
- * 实现 Runner.run 方法
+ * implements Runner.run method
  */
-GoRunner.prototype.run = function() {
+Runner.prototype.run = function() {
 	var self = this;
-	return new Promise(function(resolove, reject) {
-		console.log("go: formatting");
+	return new Promise(function(resolve, reject) {
+		console.log("%s: formatting", self.lang);
 		self.format().then(function(res) {
 			if (res.Error) {
 				reject(res.Error);
 				return;
 			}
-			console.log("go: running");
+			console.log("%s: running", self.lang);
 			self.source = res.Body;
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', playground.run);
@@ -55,15 +52,15 @@ GoRunner.prototype.run = function() {
 				version: playground.version,
 				withVet: playground.withVet
 			});
-			codeblock.sendRequest(xhr, data).then(resolove).catch(reject);
+			codeblock.sendRequest(xhr, data).then(resolve).catch(reject);
 		}).catch(reject);
 	})
 };
 
 /**
- * 格式化代码并且自动添加 imports
+ * format go code and auto imports
  */
-GoRunner.prototype.format = function() {
+Runner.prototype.format = function() {
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', playground.format);
 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -74,8 +71,8 @@ GoRunner.prototype.format = function() {
 }
 
 /**
- * 注册 GoRunner
+ * register Runner
  */
-codeblock.registerRunner("go", GoRunner);
+codeblock.registerRunner("go", Runner);
 
 })();

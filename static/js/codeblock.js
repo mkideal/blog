@@ -2,6 +2,29 @@
 
 var exports = {};
 
+exports.languageName = function(name) {
+	switch (name) {
+		case "c":
+			return "cpp";
+		case "c++":
+			return "cpp";
+		case "python":
+			return "py";
+		case "golang":
+			return "go";
+		case "javascript":
+			return "js";
+		case "csharp":
+			return "cs";
+		case "c#":
+			return "cs";
+		case "R":
+			return "r";
+		default:
+			return name;
+	}
+}
+
 /**
  * codeblock context value
  */
@@ -40,10 +63,9 @@ var kOutputStderr = "stderr";
 /**
  * Block represents a code block
  */
-function Block(id, lang, program, source) {
+function Block(id, lang, source) {
 	this.id = id;
 	this.lang = lang;
-	this.program = program;
 	this.source = source;
 }
 
@@ -70,16 +92,14 @@ exports.encodeObjectURI = function(obj) {
 /**
  * sendRequest sends a http request
  */
-exports.sendRequest = function(xhr, data) {
+exports.sendRequest = function(xhr, data, responseType) {
+	if (!xhr.responseType) {
+		xhr.responseType = responseType || "json";
+	}
 	return new Promise(function(resolve, reject) {
 		xhr.onload = function () {
 			if (this.status >= 200 && this.status < 300) {
-				try {
-					let x = JSON.parse(xhr.response);
-					resolve(x);
-				} catch (e) {
-					reject(e);
-				}
+				resolve(xhr.response);
 			} else {
 				reject(xhr.statusText);
 			}
@@ -144,7 +164,7 @@ function addCopyButton(options, parentNode, code) {
  * add "run" button for codeblock
  */
 function addRunButton(options, parentNode, code) {
-	var lang = code.getAttribute(options.langAttrName);
+	var lang = exports.languageName(code.getAttribute(options.langAttrName));
 	if (!lang || !codeblock.runners[lang]) {
 		return;
 	}
@@ -163,11 +183,13 @@ function addRunButton(options, parentNode, code) {
 	} else {
 		program = attrs || program;
 	}
+	// program with language prefix
+	program = lang + kProgramSeparator + program;
 	if (tag === kTagBad) {
 		return;
 	}
 	var runnable = tag === kTagRun;
-	var block = new Block(id, lang, program, code.innerText);
+	var block = new Block(id, lang, code.innerText);
 	var blocks = codeblock.programs[program];
 	if (!blocks) {
 		codeblock.programs[program] = [block];
@@ -228,7 +250,7 @@ function runProgram(id, program) {
 		var selected = [];
 		var Runner = codeblock.runners[lang];
 		if (!Runner) {
-			reject("runner not found for", lang);
+			reject("runner not found for " + lang);
 			return;
 		}
 		for (var i = 0; i < blocks.length; i++) {
@@ -243,7 +265,7 @@ function runProgram(id, program) {
 			}
 		}
 		try {
-			var runner = new Runner();
+			var runner = new Runner(lang);
 			runner.parse(selected);
 			runner.run().then(resolve).catch(reject);
 		} catch (e) {
