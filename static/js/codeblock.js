@@ -3,6 +3,9 @@
 var exports = {};
 
 exports.languageName = function(name) {
+	if (name) {
+		name = name.toLowerCase();
+	}
 	switch (name) {
 		case "c":
 			return "cpp";
@@ -18,8 +21,6 @@ exports.languageName = function(name) {
 			return "cs";
 		case "c#":
 			return "cs";
-		case "R":
-			return "r";
 		default:
 			return name;
 	}
@@ -44,17 +45,31 @@ function allocateUUID() {
 	return codeblock.nextUUID;
 }
 
+function guid() {
+	var d = new Date().getTime();
+	if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+		d += performance.now();
+	}
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+		var r = (d + Math.random() * 16) % 16 | 0;
+		d = Math.floor(d / 16);
+		return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+	});
+};
+
 // {code-block="-"}
 // {code-block="program"}
 // {code-block=":bad"}
 // {code-block=":run"}
 // {code-block="program:bad"}
 // {code-block="program:run"}
+// {code-block="$:run"}
 var kTagBad = "bad";
 var kTagRun = "run";
 
 var kDefaultProgram = "main";
 var kIgnoredProgram = "-";
+var kAutoProgram = "$";
 var kProgramSeparator = ":";
 
 var kOutputStdout = "stdout";
@@ -182,6 +197,9 @@ function addRunButton(options, parentNode, code) {
 		tag = attrs.substr(colon + 1);
 	} else {
 		program = attrs || program;
+	}
+	if (program === kAutoProgram) {
+		program = guid().replace(/-/g, "");
 	}
 	// program with language prefix
 	program = lang + kProgramSeparator + program;

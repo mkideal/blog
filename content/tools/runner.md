@@ -27,7 +27,7 @@ fn main() {
 c/c++
 -----
 
-```c {code-block="c:run"}
+```c {code-block="$:run"}
 #include <stdio.h>
 
 int main() {
@@ -36,7 +36,7 @@ int main() {
 }
 ```
 
-```cpp {code-block="cpp:run"}
+```cpp {code-block="$:run"}
 #include <iostream>
 
 int main() {
