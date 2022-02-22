@@ -127,11 +127,10 @@ function Block(id, lang, element) {
 	this.id = id;
 	this.lang = lang;
 	this.element = element;
-	this.previous = {
+	this.history = [{
 		cursor: 0,
 		source: this.source,
-	};
-	this.history = [];
+	}];
 }
 
 Object.defineProperty(Block.prototype, "source", {
@@ -403,11 +402,12 @@ function setEditMode(options, block, undoButton) {
 		if (now > lastSaveTime + maxSaveInterval || now > lastInputTime + idleInterval) {
 			lastSaveTime = now;
 			var size = block.history.length;
-			if (size === 0 || block.history[size-1].source !== block.previous.source) {
+			var source = code.innerText;
+			if (size === 0 || block.history[size-1].source !== source) {
 				var last = block.history[size-1];
 				block.history.push({
-					cursor: block.previous.cursor,
-					source: block.previous.source
+					cursor: getCaret(code),
+					source: source
 				});
 				if (block.history.length > kMaxHistories) {
 					console.log("merge the first half");
@@ -424,11 +424,9 @@ function setEditMode(options, block, undoButton) {
 					block.history = block.history.slice(0, block.history.length - quarter);
 				}
 			} else if (size > 0) {
-				block.history[size-1].cursor = block.previous.cursor;
+				block.history[size-1].cursor = getCaret(code);
 			}
 			console.log('save history', block.history[block.history.length - 1]);
-			block.previous.cursor = getCaret(code);
-			block.previous.source = code.innerText;
 			undoButton.style.visibility = 'visible';
 		}
 		lastInputTime = now;
@@ -501,16 +499,15 @@ function addUndoButton(options, parentNode, block) {
 	button.className = options.codeUndoButtonClass;
 	button.type = "button";
 	button.innerHTML = undoIcon;
-	button.style.visibility = block.history.length > 0 ? 'visible' : 'hidden';
+	button.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
 	button.addEventListener("click", function() {
-		if (block.history.length > 0) {
-			var last = block.history.pop();
-			block.element.innerText = last.source;
-			block.previous.cursor = last.cursor;
-			block.previous.source = last.source;
-			updateCodeBlock(options, block.element, block.lang, last.cursor);
+		if (block.history.length > 1) {
+			block.history.pop();
 		}
-		button.style.visibility = block.history.length > 0 ? 'visible' : 'hidden';
+		var last = block.history[block.history.length - 1];
+		block.element.innerText = last.source;
+		updateCodeBlock(options, block.element, block.lang, last.cursor);
+		button.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
 		clearCodeOutput(options, block.element);
 	});
 	parentNode.appendChild(button);
