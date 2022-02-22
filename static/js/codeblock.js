@@ -293,6 +293,8 @@ function setCaret(element, lastPos) {
 	element.focus();
 };
 
+var spaceRegexp = /\s/;
+
 /**
  * add "run" button for codeblock
  */
@@ -330,12 +332,49 @@ function addRunButton(options, parentNode, code) {
 		code.setAttribute("contenteditable", "true");
 		code.spellcheck = false;
 		code.addEventListener('keydown', function(e){
-			if(e.keyCode == 9){
+			if (e.keyCode == 9/*tab*/){
 				e.preventDefault();
 				document.execCommand('insertHTML', false, '&#009');
+			} else if (e.keyCode == 13/*enter*/) {
+				e.preventDefault();
+				var prefix;
+				if (code.innerText) {
+					var cursor = getCaret(code);
+					var lastLineIndex = code.innerText.substr(0, cursor).lastIndexOf("\n");
+					var isEmptyLine = true;
+					var lineStart = lastLineIndex + 1;
+					if (lastLineIndex >= 0) {
+						for (var i = lineStart; i < cursor; i++) {
+							if (!spaceRegexp.test(code.innerText.charAt(i))) {
+								isEmptyLine = false;
+								if (i > lineStart) {
+									prefix = code.innerText.substr(lineStart, i - lineStart);
+								}
+								break;
+							}
+						}
+						if (isEmptyLine && cursor > lineStart) {
+							prefix = code.innerText.substr(lineStart, cursor - lineStart);
+						}
+					}
+					if (isEmptyLine && lineStart < cursor) {
+						// remove current empty line but line endings
+						setCaret(code, lineStart);
+						for (var i = lineStart; i < cursor; i++) {
+							document.execCommand('forwardDelete', false);
+						}
+					}
+				}
+				document.execCommand('insertParagraph', false);
+				if (prefix) {
+					document.execCommand('insertText', false, prefix);
+				}
 			}
 		})
-		code.addEventListener('input', function(e){
+		code.addEventListener('input', function(e) {
+			if (code.getAttribute("compositionstart") === "true") {
+				return;
+			}
 			if (options.highlighter) {
 				var grammer = options.highlighter.languages[lang];
 				if (grammer) {
@@ -345,7 +384,14 @@ function addRunButton(options, parentNode, code) {
 					setCaret(code, cursor);
 				}
 			}
-		})
+		});
+		code.addEventListener('compositionstart', function(e) {
+			code.setAttribute("compositionstart", "true");
+		});
+		code.addEventListener('compositionend', function(e) {
+			code.setAttribute("compositionstart", "false");
+			code.dispatchEvent(new Event('input', {bubbles:true}));
+		});
 		code.style.whiteSpace = 'pre-wrap';
 		dynamic = true;
 	}
