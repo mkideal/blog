@@ -112,6 +112,8 @@ var kModeBad = "b";   // bad code and not executed
 var kModeErr = "e";   // TODO: error code but can executed
 var kModeWrite = "w"; // TODO: writable
 
+var kMaxHistories = 1000;
+
 /**
  * output kinds
  */
@@ -121,18 +123,22 @@ exports.Stderr = "stderr";
 /**
  * Block represents a code block
  */
-function Block(id, lang, source, element) {
+function Block(id, lang, element) {
 	this.id = id;
 	this.lang = lang;
-	this.source = source;
 	this.element = element;
+	this.previous = {
+		cursor: 0,
+		source: this.source,
+	};
+	this.history = [];
 }
 
-Block.prototype.update = function() {
-	if (this.element) {
-		this.source = this.element.innerText;
+Object.defineProperty(Block.prototype, "source", {
+	get: function() {
+		return this.element.innerText;
 	}
-}
+});
 
 /**
  * registerRunner registers code runner for specific program language
@@ -193,7 +199,7 @@ function addCodeButtons(options) {
 			addCopyButton(options, div, code);
 		}
 		if (options.enableRunner) {
-			addRunButton(options, div, code);
+			addLanguageButton(options, div, code);
 		}
 	});
 }
@@ -249,20 +255,23 @@ function getCaret(element) {
 	return caretOffset;
 }
 
-function getContentLength(node) {
-	var n = 0;
-	if (node.childNodes && node.childNodes.length) {
-		for (var i = 0; i < node.childNodes.length; i++) {
-			if (node.childNodes[i].textContent) {
-				n += node.childNodes[i].textContent.length;
-				return n;
+function lookupCursor(element, lastPos, target) {
+	if (element.childNodes && element.childNodes.length) {
+		for (var i = 0; i < element.childNodes.length; i++) {
+			if (lookupCursor(element.childNodes[i], lastPos, target)) {
+				return true;
 			}
 		}
+	} else {
+		if (lastPos <= target.offset + element.textContent.length) {
+			target.node = element;
+			target.offset = lastPos - target.offset;
+			return true;
+		} else {
+			target.offset += element.textContent.length;
+		}
 	}
-	if (node.textContent) {
-		n += node.textContent.length;
-	}
-	return n;
+	return false;
 }
 
 function setCaret(element, lastPos) {
@@ -270,21 +279,12 @@ function setCaret(element, lastPos) {
 	var range = document.createRange();
 	var sel = window.getSelection();
 
-	var n = 0;
 	if (element.childNodes.length > 0) {
-		while (true) {
-			n = getContentLength(element.childNodes[curNode]);
-			if (lastPos <= n) {
-				break;
-			}
-			lastPos = lastPos - n;
-			curNode++;
-		}
-		var parentNode = element.childNodes[curNode];
-		if (parentNode.childNodes && parentNode.childNodes.length > 0) {
-			range.setStart(parentNode.childNodes[0], lastPos);
-		} else {
-			range.setStart(parentNode, lastPos);
+		var node = element;
+		var target = {node: undefined, offset: 0};
+		lookupCursor(element, lastPos, target);
+		if (target.node) {
+			range.setStart(target.node, target.offset);
 		}
 		range.collapse(true);
 		sel.removeAllRanges();
@@ -298,7 +298,7 @@ var spaceRegexp = /\s/;
 /**
  * add "run" button for codeblock
  */
-function addRunButton(options, parentNode, code) {
+function addLanguageButton(options, parentNode, code) {
 	var lang = languageName(code.getAttribute(options.langAttrName));
 	if (!lang || !codeblock.runners[lang]) {
 		return;
@@ -327,78 +327,10 @@ function addRunButton(options, parentNode, code) {
 	if (program === kAutoProgram) {
 		program = guid().replace(/-/g, "");
 	}
-	var dynamic = false;
-	if (modes.includes(kModeWrite)) {
-		code.setAttribute("contenteditable", "true");
-		code.spellcheck = false;
-		code.addEventListener('keydown', function(e){
-			if (e.keyCode == 9/*tab*/){
-				e.preventDefault();
-				document.execCommand('insertHTML', false, '&#009');
-			} else if (e.keyCode == 13/*enter*/) {
-				e.preventDefault();
-				var prefix;
-				if (code.innerText) {
-					var cursor = getCaret(code);
-					var lastLineIndex = code.innerText.substr(0, cursor).lastIndexOf("\n");
-					var isEmptyLine = true;
-					var lineStart = lastLineIndex + 1;
-					if (lastLineIndex >= 0) {
-						for (var i = lineStart; i < cursor; i++) {
-							if (!spaceRegexp.test(code.innerText.charAt(i))) {
-								isEmptyLine = false;
-								if (i > lineStart) {
-									prefix = code.innerText.substr(lineStart, i - lineStart);
-								}
-								break;
-							}
-						}
-						if (isEmptyLine && cursor > lineStart) {
-							prefix = code.innerText.substr(lineStart, cursor - lineStart);
-						}
-					}
-					if (isEmptyLine && lineStart < cursor) {
-						// remove current empty line but line endings
-						setCaret(code, lineStart);
-						for (var i = lineStart; i < cursor; i++) {
-							document.execCommand('forwardDelete', false);
-						}
-					}
-				}
-				document.execCommand('insertParagraph', false);
-				if (prefix) {
-					document.execCommand('insertText', false, prefix);
-				}
-			}
-		})
-		code.addEventListener('input', function(e) {
-			if (code.getAttribute("compositionstart") === "true") {
-				return;
-			}
-			if (options.highlighter) {
-				var grammer = options.highlighter.languages[lang];
-				if (grammer) {
-					var res = options.highlighter.highlight(code.innerText, grammer, lang);
-					var cursor = getCaret(code);
-					code.innerHTML = res;
-					setCaret(code, cursor);
-				}
-			}
-		});
-		code.addEventListener('compositionstart', function(e) {
-			code.setAttribute("compositionstart", "true");
-		});
-		code.addEventListener('compositionend', function(e) {
-			code.setAttribute("compositionstart", "false");
-			code.dispatchEvent(new Event('input', {bubbles:true}));
-		});
-		code.style.whiteSpace = 'pre-wrap';
-		dynamic = true;
-	}
 	// program with language prefix
 	program = lang + kProgramSeparator + program;
 	var runnable = modes.includes(kModeExe);
-	var block = new Block(id, lang, code.innerText, dynamic ? code : null);
+	var block = new Block(id, lang, code);
 	codeblock.blocks[id] = block;
 	var blocks = codeblock.programs[program];
 	if (!blocks) {
@@ -409,6 +341,124 @@ function addRunButton(options, parentNode, code) {
 	if (!runnable) {
 		return;
 	}
+	addRunButton(options, parentNode, code, id, program);
+	if (modes.includes(kModeWrite)) {
+		var button = addUndoButton(options, parentNode, block);
+		setEditMode(options, block, button);
+	}
+}
+
+function setEditMode(options, block, undoButton) {
+	var code = block.element;
+	var lang = block.lang;
+	var lastSaveTime = new Date().getTime();
+	var lastInputTime = lastSaveTime;
+	var idleInterval = 500; // 500ms
+	var maxSaveInterval = 5000; // 5s
+	code.setAttribute("contenteditable", "true");
+	code.spellcheck = false;
+	code.addEventListener('keydown', function(e){
+		if (e.keyCode == 9/*tab*/){
+			e.preventDefault();
+			document.execCommand('insertHTML', false, '&#009');
+		} else if (e.keyCode == 13/*enter*/) {
+			e.preventDefault();
+			var prefix;
+			if (code.innerText) {
+				var cursor = getCaret(code);
+				var lastLineIndex = code.innerText.substr(0, cursor).lastIndexOf("\n");
+				var isEmptyLine = true;
+				var lineStart = lastLineIndex + 1;
+				for (var i = lineStart; i < cursor; i++) {
+					if (!spaceRegexp.test(code.innerText.charAt(i))) {
+						isEmptyLine = false;
+						if (i > lineStart) {
+							prefix = code.innerText.substr(lineStart, i - lineStart);
+						}
+						break;
+					}
+				}
+				if (isEmptyLine && cursor > lineStart) {
+					prefix = code.innerText.substr(lineStart, cursor - lineStart);
+				}
+				if (isEmptyLine && lineStart < cursor) {
+					// remove current empty line but line endings
+					setCaret(code, lineStart);
+					for (var i = lineStart; i < cursor; i++) {
+						document.execCommand('forwardDelete', false);
+					}
+				}
+			}
+			document.execCommand('insertParagraph', false);
+			if (prefix) {
+				document.execCommand('insertText', false, prefix);
+			}
+		}
+	})
+	code.addEventListener('input', function(e) {
+		if (code.getAttribute("compositionstart") === "true") {
+			return;
+		}
+		var now = new Date().getTime();
+		if (now > lastSaveTime + maxSaveInterval || now > lastInputTime + idleInterval) {
+			lastSaveTime = now;
+			var size = block.history.length;
+			if (size === 0 || block.history[size-1].source !== block.previous.source) {
+				var last = block.history[size-1];
+				block.history.push({
+					cursor: block.previous.cursor,
+					source: block.previous.source
+				});
+				if (block.history.length > kMaxHistories) {
+					console.log("merge the first half");
+					// 1 2 3 4 | 5 6 7 8
+					// y n y n | y y y y
+					// 1 3 5 6 7 8
+					var quarter = Math.floor(block.history.length / 4);
+					for (var i = 1; i < quarter; i++) {
+						block.history[i] = block.history[2*i];
+					}
+					for (var i = 2*quarter; i < block.history.length; i++) {
+						block.history[i - quarter] = block.history[i];
+					}
+					block.history = block.history.slice(0, block.history.length - quarter);
+				}
+			} else if (size > 0) {
+				block.history[size-1].cursor = block.previous.cursor;
+			}
+			console.log('save history', block.history[block.history.length - 1]);
+			block.previous.cursor = getCaret(code);
+			block.previous.source = code.innerText;
+			undoButton.style.visibility = 'visible';
+		}
+		lastInputTime = now;
+		updateCodeBlock(options, code, lang);
+	});
+	code.addEventListener('compositionstart', function(e) {
+		code.setAttribute("compositionstart", "true");
+	});
+	code.addEventListener('compositionend', function(e) {
+		code.setAttribute("compositionstart", "false");
+		code.dispatchEvent(new Event('input', {bubbles:true}));
+	});
+	code.style.whiteSpace = 'pre-wrap';
+}
+
+function updateCodeBlock(options, code, lang, cursor) {
+	if (options.highlighter) {
+		var grammer = options.highlighter.languages[lang];
+		if (grammer) {
+			var res = options.highlighter.highlight(code.innerText, grammer, lang);
+			if (cursor == undefined || cursor == null) {
+				cursor = getCaret(code);
+			}
+			code.innerHTML = res;
+			setCaret(code, cursor);
+		}
+	}
+}
+
+function addRunButton(options, parentNode, code, id, program) {
 	var runIcon = options.runIcon;
 	var runningIcon = options.runningIcon;
 	var button = document.createElement("button");
@@ -445,6 +495,28 @@ function addRunButton(options, parentNode, code) {
 	parentNode.appendChild(button);
 }
 
+function addUndoButton(options, parentNode, block) {
+	var undoIcon = options.undoIcon;
+	var button = document.createElement("button");
+	button.className = options.codeUndoButtonClass;
+	button.type = "button";
+	button.innerHTML = undoIcon;
+	button.style.visibility = block.history.length > 0 ? 'visible' : 'hidden';
+	button.addEventListener("click", function() {
+		if (block.history.length > 0) {
+			var last = block.history.pop();
+			block.element.innerText = last.source;
+			block.previous.cursor = last.cursor;
+			block.previous.source = last.source;
+			updateCodeBlock(options, block.element, block.lang, last.cursor);
+		}
+		button.style.visibility = block.history.length > 0 ? 'visible' : 'hidden';
+		clearCodeOutput(options, block.element);
+	});
+	parentNode.appendChild(button);
+	return button;
+}
+
 /**
  * runProgram runs specific program
  */
@@ -469,7 +541,6 @@ function runProgram(id, program) {
 					continue;
 				}
 			}
-			blocks[i].update();
 			selected.push(blocks[i]);
 			if (blocks[i].id === id) {
 				break;
@@ -559,6 +630,8 @@ exports.init = function(options) {
 	options.runIcon = options.runIcon || '<i class="fas fa-play"></i><span> Run</span>';
 	options.runningIcon = options.runningIcon || 'Running';
 	options.codeRunButtonClass = options.codeRunButtonClass || "btn btn-light btn-code btn-code-run";
+	options.undoIcon = options.undoIcon || '<i class="fas fa-undo"></i><span> Undo</span>';
+	options.codeUndoButtonClass = options.codeUndoButtonClass || "btn btn-light btn-code btn-code-undo";
 
 	options.codeOutputClass = options.codeOutputClass || "code-output";
 	options.errorOutputStyle = options.errorOutputStyle || "color: red";
