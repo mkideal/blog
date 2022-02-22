@@ -32,6 +32,8 @@
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/components/prism-core.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+	<script src="/js/lib/jquery-3.6.0.min.js"></script>
+	<script src="/js/lib/bootstrap.bundle.min.js"></script>
 
 	<script src="/js/codeblock.js"></script>
 	<script src="/js/runner/go.js"></script>
@@ -40,5 +42,8 @@
 	<script src="/js/runner/other.js"></script>
 	<script>
 		codeblock.init();
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip()
+		})
 	</script>
 </head>

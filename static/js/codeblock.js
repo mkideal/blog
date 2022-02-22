@@ -207,6 +207,10 @@ function addCopyButton(options, parentNode, code) {
 	button.className = options.codeClipboardButtonClass;
 	button.type = "button";
 	button.innerHTML = copyIcon;
+	button.setAttribute("data-toggle", "tooltip");
+	button.setAttribute("data-placement", "bottom");
+	button.setAttribute("title", "Copy");
+	$(button).tooltip();
 	button.addEventListener("click", function() {
 		codeblock.clipboard.writeText(code.innerText).then(
 			function() {
@@ -459,6 +463,10 @@ function addRunButton(options, parentNode, code, id, program) {
 	button.className = options.codeRunButtonClass;
 	button.type = "button";
 	button.innerHTML = runIcon;
+	button.setAttribute("data-toggle", "tooltip");
+	button.setAttribute("data-placement", "bottom");
+	button.setAttribute("title", "Run");
+	$(button).tooltip();
 	button.addEventListener("click", function() {
 		button.innerHTML = runningIcon;
 		clearCodeOutput(code);
@@ -495,6 +503,10 @@ function addUndoButton(options, parentNode, block) {
 	button.className = options.codeUndoButtonClass;
 	button.type = "button";
 	button.innerHTML = undoIcon;
+	button.setAttribute("data-toggle", "tooltip");
+	button.setAttribute("data-placement", "bottom");
+	button.setAttribute("title", "Undo");
+	$(button).tooltip();
 	button.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
 	button.addEventListener("click", function() {
 		if (block.history.length > 1) {
@@ -644,10 +656,10 @@ exports.init = function(options) {
 	options.copiedIcon = options.copiedIcon || '<i class="fas fa-check" style="color: #32CD32"></i>';
 	options.codeClipboardButtonClass = options.codeClipboardButtonClass || "btn btn-light btn-code btn-code-clipboard";
 
-	options.runIcon = options.runIcon || '<i class="fas fa-play"></i><span> Run</span>';
-	options.runningIcon = options.runningIcon || 'Running';
+	options.runIcon = options.runIcon || '<i class="fas fa-play"></i>';
+	options.runningIcon = options.runningIcon || '<i class="fas fa-sync fa-spin"></i>';
 	options.codeRunButtonClass = options.codeRunButtonClass || "btn btn-light btn-code btn-code-run";
-	options.undoIcon = options.undoIcon || '<i class="fas fa-undo"></i><span> Undo</span>';
+	options.undoIcon = options.undoIcon || '<i class="fas fa-undo"></i>';
 	options.codeUndoButtonClass = options.codeUndoButtonClass || "btn btn-light btn-code btn-code-undo";
 
 	options.codeOutputClass = options.codeOutputClass || "code-output";
