@@ -32,11 +32,13 @@ showAll: true
 document.addEventListener('DOMContentLoaded',function(){
 	if (window.codeblock) {
 		var codes = {};
-		document.querySelectorAll('.highlight[hidden="true"]').forEach(function(h) {
-			var code = h.querySelector("pre > code");
-			var lang = code.getAttribute("data-lang");
-			if (lang) {
-				codes[codeblock.languageName(lang)] = code.innerText;
+		document.querySelectorAll('.highlight').forEach(function(h) {
+			if (h.hasAttribute("hidden")) {
+				var code = h.querySelector("pre > code");
+				var lang = code.getAttribute("data-lang");
+				if (lang) {
+					codes[codeblock.languageName(lang)] = code.innerText;
+				}
 			}
 		});
 		console.log("codes", codes);
