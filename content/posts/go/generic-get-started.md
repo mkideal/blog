@@ -12,7 +12,7 @@ abstract: "Go 1.18 版本之后正式引入泛型，它被称作类型参数（t
 
 (1). 函数体内需要对参数做运算而不是使用接口方法，如下的写法连编译都不可行。
 
-```go {code-block=":bad"}
+```go {code="+b"}
 // Sum 函数尝试对输入的任意多个参数求和。
 // 然而 interface{} 不可以做加法，这段代码是不能编译的
 func Sum(values ...interface{}) interface{} {
@@ -26,7 +26,7 @@ func Sum(values ...interface{}) interface{} {
 
 (2). 使用接口常常存在极其令人厌恶的接口转换，一个例子是标准库 `container/heap`。`Pop` 方法返回值几乎总是需要在逻辑上再转换为 `Push` 时传入的类型，这使得代码不仅丑陋而且低效（曾经因为 interface{} 实际是 int 类型，但是因为类型转换导致大量的内存分配次数）
 
-```go {code-block="-"}
+```go {code="-"}
 // Push pushes the element x onto the heap.
 // The complexity is O(log n) where n = h.Len().
 func Push(h Interface, x interface{}) {
@@ -47,7 +47,7 @@ func Pop(h Interface) interface{} {
 
 在 go1.18 尚未正式发布时可以通过如下命令安装 beta 版本体验
 
-```sh
+```bash
 go install golang.org/dl/go1.18beta2@latest
 go1.18beta2 download
 ```
@@ -60,7 +60,7 @@ go1.18beta2 download
 
 仍以求和函数为例，泛型版本的写法如下：
 
-```go {code-block="sum" hl_lines=[5]}
+```go {code="sum" hl_lines=[5]}
 import (
 	"golang.org/x/exp/constraints"
 )
@@ -84,7 +84,7 @@ func Sum[T constraints.Integer](values ...T) T {
 
 现在可以来使用一下刚才定义的 `Sum` 方法：
 
-```go {code-block="sum:run"}
+```go {code="sum+x"}
 func main() {
 	fmt.Println(Sum(1, 2, 3))
 
@@ -105,7 +105,7 @@ func main() {
 
 这个版本仍有一些问题，比如可以做加法的不止整数啊，还有浮点数，甚至是复数。修改类型参数 `T` 的约束来支持浮点数和复数：
 
-```go {code-block="sum2:run" hl_lines=[5]}
+```go {code="sum2+x" hl_lines=[5]}
 import (
 	"golang.org/x/exp/constraints"
 )
@@ -127,7 +127,7 @@ func main() {
 
 `Sum` 函数的例子只用了一个类型参数，go 的类型参数也支持多个，这个定义和函数参数的格式类似。
 
-```go {code-block="-"}
+```go {code="-"}
 func FuncA[T, U any]() {
 	// ...
 }
@@ -143,7 +143,7 @@ func FuncB[T any, U, V comparable]() {
 
 这个例子用于判定 `a` 是否为 zero 值，如果是则返回 `b`，反之返回 `a`。
 
-```go {code-block="or:run"}
+```go {code="$+x"}
 func Or[T comparable](a, b T) T {
 	var zero T
 	if a == zero {
@@ -174,7 +174,7 @@ func main() {
 
 可以再实现一个延迟函数调用的版本 `OrNew` 处理这种情况：
 
-```go {code-block="or2:run" hl_lines=["9-15",20]}
+```go {code="$+x" hl_lines=["9-15",20]}
 func Or[T comparable](a, b T) T {
 	var zero T
 	if a == zero {
@@ -211,7 +211,7 @@ func main() {
 
 go 语言不存在三元条件运算符 `<condition>? value1 : value2`，导致经常存在需要这种场景时只好用 `if` 写好几行的代码，不过现在可以通过泛型实现一个条件运算了。
 
-```go {code-block="if:run"}
+```go {code="$+x"}
 func If[T any](yes bool, a, b T) T {
 	if yes {
 		return a
@@ -266,14 +266,14 @@ func (pair Pair[T1, T2]) Elements() (T1, T2) {
 
 另外 go 的泛型目前不支持给成员方法声明新的类型参数，比如这种成员方法的定义就不允许：
 
-```go {code-block=":bad"}
+```go {code="+b"}
 // Bad: 成员方法后面不能声明类型参数
 func (pair Pair[T1, T2]) Something[T any]() {}
 ```
 
 除了 `struct` 之外，interface 的定义也支持类型参数（但是它的接口方法不支持类型参数），但是 `type alias` 不支持类型参数
 
-```go {code-block="-"}
+```go {code="-"}
 type Interface[T any] interface {
 	// ...
 }
@@ -297,7 +297,7 @@ type Vector[T any] = []T
 
 类型约束除了内置的 `any`, `comparable` 以及 `golang.org/x/exp/constraints` 中定义的之外，也可以使用自己定义的任意接口用作约束，就像上例中的 `User`。另外现在除了以前概念中的 interface 定义之外，还有一种纯粹只能用于类型参数约束的 interface。像这类使用了基础类型或者 `|` 运算的接口。
 
-```go {code-block="-"}
+```go {code="-"}
 // 实数约束 Real 只能用于类型参数约束，而不能作为普通参数或变量类型。
 type Real interface {
 	constraints.Integer | constraints.Float
@@ -381,7 +381,7 @@ func (h listenerFunc[T, E]) Handle(event Event[T]) {
 
 上面这段代码需要特别说明一下 `Listen` 函数，该函数有 2 个类型参数 `T` 和 `E`，前者是事件类别的类型参数，后者是事件类型参数，而 `E` 的约束 `Event[T]` 中依赖了前一个泛型参数，这样一来事件处理函数 `handler` 的参数就不再是 `Event` 接口而是一个泛型参数了，这避免了每次在回调函数中进行一次类型转换（因为已经统一在 listenerFunc.Handle 中转换了）。比如以前经常是这样写回调函数
 
-```go {code-block="-"}
+```go {code="-"}
 func onSomething(event Event) error {
 	somethingEvent, ok := event.(*SomethingEvent)
 	if !ok {
@@ -393,7 +393,7 @@ func onSomething(event Event) error {
 
 而现在回调函数就可以避免每次手动转换类型了
 
-```go {code-block="-"}
+```go {code="-"}
 func onSomething(event *SomethingEvent) error {
 	// doSomething with event
 }
@@ -475,7 +475,7 @@ func (dispatcher *Dispatcher[T]) DispatchEvent(event Event[T]) bool {
 
 至此，一个基本的事件系统就完成了，接下来看看如何使用。
 
-```go {code-block=":run"}
+```go {code="+x"}
 // 这个例子中事件的 Type 使用 string 类型
 type testEventA struct {}
 type testEventB struct {}

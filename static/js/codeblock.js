@@ -2,7 +2,60 @@
 
 var exports = {};
 
-exports.languageName = function(name) {
+// https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/includes
+if (!String.prototype.includes) {
+	String.prototype.includes = function(search, start) {
+		'use strict';
+		if (typeof start !== 'number') {
+			start = 0;
+		}
+		if (start + search.length > this.length) {
+			return false;
+		} else {
+			return this.indexOf(search, start) !== -1;
+		}
+	};
+}
+
+/**
+ * codeblock context value
+ */
+var codeblock = {
+	initialized: false, /* initialized or not */
+	nextUUID: 0, /* used to allocate uuid */
+	runners: {}, /* code runners for each languages */
+	programs: {}, /* programs by program name */
+	blocks: {}, /* code blocks by id */
+	clipboard: null, /* clipboard API object */
+};
+
+/**
+ * allocateUUID allocates an uuid
+ */
+function allocateUUID() {
+	codeblock.nextUUID++;
+	return codeblock.nextUUID;
+}
+
+/**
+ * guid allocates a guid
+ */
+function guid() {
+	var d = new Date().getTime();
+	if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+		d += performance.now();
+	}
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+		var r = (d + Math.random() * 16) % 16 | 0;
+		d = Math.floor(d / 16);
+		return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+	});
+};
+
+/**
+ * languageName get internal standard language name
+ */
+function languageName(name) {
 	if (name) {
 		name = name.toLowerCase();
 	}
@@ -26,62 +79,59 @@ exports.languageName = function(name) {
 	}
 }
 
-/**
- * codeblock context value
- */
-var codeblock = {
-	initialized: false, /* initialized or not */
-	nextUUID: 0, /* used to allocate uuid */
-	runners: {}, /* code runners for each languages */
-	programs: {}, /* programs */
-	clipboard: null, /* clipboard API object */
-};
-
-/**
- * allocateUUID allocates an uuid
- */
-function allocateUUID() {
-	codeblock.nextUUID++;
-	return codeblock.nextUUID;
-}
-
-function guid() {
-	var d = new Date().getTime();
-	if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
-		d += performance.now();
-	}
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-		var r = (d + Math.random() * 16) % 16 | 0;
-		d = Math.floor(d / 16);
-		return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-	});
-};
-
-// {code-block="-"}
-// {code-block="program"}
-// {code-block=":bad"}
-// {code-block=":run"}
-// {code-block="program:bad"}
-// {code-block="program:run"}
-// {code-block="$:run"}
-var kTagBad = "bad";
-var kTagRun = "run";
+// code examples
+//
+// For html:
+//	<pre><code code="-"></code></pre>
+//	<pre><code code="main"></code></pre>
+//	<pre><code code="main+b"></code></pre>
+//	<pre><code code="main+r"></code></pre>
+//	<pre><code code="main+rb"></code></pre>
+//	<pre><code code="+b"></code></pre>
+//	<pre><code code="+r"></code></pre>
+//	<pre><code code="$+r"></code></pre>
+//
+// For hugo:
+//  {code="-"}
+//  {code="main"}
+//  {code="main+b"}
+//  {code="main+r"}
+//  {code="main+rb"}
+//  {code="+b"}
+//  {code="+r"}
+//  {code="$+r"}
 
 var kDefaultProgram = "main";
 var kIgnoredProgram = "-";
 var kAutoProgram = "$";
-var kProgramSeparator = ":";
+var kProgramSeparator = "+";
 
-var kOutputStdout = "stdout";
-var kOutputStderr = "stderr";
+// modes: xbew
+var kModeExe = "x";   // executable
+var kModeBad = "b";   // bad code and not executed
+var kModeErr = "e";   // TODO: error code but can executed
+var kModeWrite = "w"; // TODO: writable
+
+/**
+ * output kinds
+ */
+exports.Stdout = "stdout";
+exports.Stderr = "stderr";
 
 /**
  * Block represents a code block
  */
-function Block(id, lang, source) {
+function Block(id, lang, source, element) {
 	this.id = id;
 	this.lang = lang;
 	this.source = source;
+	this.element = element;
+}
+
+Block.prototype.update = function() {
+	if (this.element) {
+		this.source = this.element.innerText;
+	}
 }
 
 /**
@@ -175,39 +225,135 @@ function addCopyButton(options, parentNode, code) {
 	parentNode.appendChild(button);
 }
 
+function getCaret(element) {
+	var caretOffset = 0;
+	var doc = element.ownerDocument || element.document;
+	var win = doc.defaultView || doc.parentWindow;
+	var sel;
+	if (typeof win.getSelection != "undefined") {
+		sel = win.getSelection();
+		if (sel.rangeCount > 0) {
+			var range = win.getSelection().getRangeAt(0);
+			var preCaretRange = range.cloneRange();
+			preCaretRange.selectNodeContents(element);
+			preCaretRange.setEnd(range.endContainer, range.endOffset);
+			caretOffset = preCaretRange.toString().length;
+		}
+	} else if ((sel = doc.selection) && sel.type != "Control") {
+		var textRange = sel.createRange();
+		var preCaretTextRange = doc.body.createTextRange();
+		preCaretTextRange.moveToElementText(element);
+		preCaretTextRange.setEndPoint("EndToEnd", textRange);
+		caretOffset = preCaretTextRange.text.length;
+	}
+	return caretOffset;
+}
+
+function getContentLength(node) {
+	var n = 0;
+	if (node.childNodes && node.childNodes.length) {
+		for (var i = 0; i < node.childNodes.length; i++) {
+			if (node.childNodes[i].textContent) {
+				n += node.childNodes[i].textContent.length;
+				return n;
+			}
+		}
+	}
+	if (node.textContent) {
+		n += node.textContent.length;
+	}
+	return n;
+}
+
+function setCaret(element, lastPos) {
+	var curNode=0;
+	var range = document.createRange();
+	var sel = window.getSelection();
+
+	var n = 0;
+	if (element.childNodes.length > 0) {
+		while (true) {
+			n = getContentLength(element.childNodes[curNode]);
+			if (lastPos <= n) {
+				break;
+			}
+			lastPos = lastPos - n;
+			curNode++;
+		}
+		var parentNode = element.childNodes[curNode];
+		if (parentNode.childNodes && parentNode.childNodes.length > 0) {
+			range.setStart(parentNode.childNodes[0], lastPos);
+		} else {
+			range.setStart(parentNode, lastPos);
+		}
+		range.collapse(true);
+		sel.removeAllRanges();
+		sel.addRange(range);
+	}
+	element.focus();
+};
+
 /**
  * add "run" button for codeblock
  */
 function addRunButton(options, parentNode, code) {
-	var lang = exports.languageName(code.getAttribute(options.langAttrName));
+	var lang = languageName(code.getAttribute(options.langAttrName));
 	if (!lang || !codeblock.runners[lang]) {
 		return;
 	}
 	var id = allocateUUID();
 	var highlight = code.parentNode.parentNode;
-	var attrs = highlight.getAttribute(options.codeBlockAttrName) || "";
+
+	// parse "code" attributes: [programName][+xbew] | "-" | ""
+	var attrs = highlight.getAttribute(options.codeAttrName) || "";
 	if (attrs === kIgnoredProgram) {
 		return;
 	}
 	var program = kDefaultProgram;
-	var tag = "";
-	var colon = attrs.indexOf(kProgramSeparator);
-	if (colon >= 0) {
-		program = attrs.substr(0, colon) || program;
-		tag = attrs.substr(colon + 1);
+	var modes = "";
+	var splitIndex = attrs.indexOf(kProgramSeparator);
+	if (splitIndex >= 0) {
+		// program+modes
+		program = attrs.substr(0, splitIndex) || program;
+		modes = attrs.substr(splitIndex + 1);
+		if (modes.includes(kModeBad)) {
+			return;
+		}
 	} else {
 		program = attrs || program;
 	}
 	if (program === kAutoProgram) {
 		program = guid().replace(/-/g, "");
 	}
+	var dynamic = false;
+	if (modes.includes(kModeWrite)) {
+		code.setAttribute("contenteditable", "true");
+		code.spellcheck = false;
+		code.addEventListener('keydown', function(e){
+			if(e.keyCode == 9){
+				e.preventDefault();
+				document.execCommand('insertHTML', false, '&#009');
+			}
+		})
+		code.addEventListener('input', function(e){
+			if (options.highlighter) {
+				var grammer = options.highlighter.languages[lang];
+				if (grammer) {
+					var res = options.highlighter.highlight(code.innerText, grammer, lang);
+					var cursor = getCaret(code);
+					code.innerHTML = res;
+					setCaret(code, cursor);
+				}
+			}
+		})
+		code.style.whiteSpace = 'pre-wrap';
+		dynamic = true;
+	}
 	// program with language prefix
 	program = lang + kProgramSeparator + program;
-	if (tag === kTagBad) {
-		return;
-	}
-	var runnable = tag === kTagRun;
-	var block = new Block(id, lang, code.innerText);
+	var runnable = modes.includes(kModeExe);
+	var block = new Block(id, lang, code.innerText, dynamic ? code : null);
+	codeblock.blocks[id] = block;
 	var blocks = codeblock.programs[program];
 	if (!blocks) {
 		codeblock.programs[program] = [block];
@@ -232,7 +378,7 @@ function addRunButton(options, parentNode, code) {
 					console.log(res.Errors);
 					createCodeOutput(options, code, [{
 						Message: res.Errors,
-						Kind: kOutputStderr
+						Kind: exports.Stderr
 					}]);
 				} else {
 					createCodeOutput(options, code, res.Events);
@@ -243,7 +389,7 @@ function addRunButton(options, parentNode, code) {
 			function (error) {
 				createCodeOutput(options, code, [{
 					Message: error + "",
-					Kind: kOutputStderr
+					Kind: exports.Stderr
 				}]);
 				button.blur();
 				button.innerHTML = runIcon;
@@ -277,6 +423,7 @@ function runProgram(id, program) {
 					continue;
 				}
 			}
+			blocks[i].update();
 			selected.push(blocks[i]);
 			if (blocks[i].id === id) {
 				break;
@@ -316,7 +463,7 @@ function createCodeOutput(options, code, results) {
 	}
 	for (var i = 0; i < results.length; i++) {
 		var span = document.createElement("span");
-		if (results[i].Kind === kOutputStderr) {
+		if (results[i].Kind === exports.Stderr) {
 			span.style = options.errorOutputStyle;
 		}
 		span.innerText = results[i].Message;
@@ -340,12 +487,24 @@ exports.init = function(options) {
 	codeblock.initialized = true;
 	options = options || {};
 
+	// Request JSON:
+	//	  {
+	//		  classes: false
+	//		  language: "languageName"
+	//		  style: "stylename"
+	//		  text: "code"
+	//	  }
+	//
+	// Response JSON: {html: ""}
+	options.highlighter = getDefaultValue(options.highlighter, window.Prism ? window.Prism : null);
+	options.highlightStyle = options.highlightStyle || "pygments";
+
 	options.codeSelector = "pre > code";
 	options.enableClipboard = getDefaultValue(options.enableClipboard, true);
 	options.enableRunner = getDefaultValue(options.enableRunner, true);
 	options.codeButtonContainerClass = options.codeButtonContainerClass || "code-button-container";
 	options.langAttrName = options.langAttrName || "data-lang";
-	options.codeBlockAttrName = options.codeBlockAttrName || "code-block";
+	options.codeAttrName = options.codeAttrName || "code";
 
 	options.copyIcon = options.copyIcon || '<i class="fas fa-copy"></i>';
 	options.copiedIcon = options.copiedIcon || '<i class="fas fa-check" style="color: #32CD32"></i>';

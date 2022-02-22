@@ -104,3 +104,7 @@ a {
 .highlight {
   position: relative;
 }
+
+.highlight pre {
+	background-color: white !important;
+}

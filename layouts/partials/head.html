@@ -28,6 +28,7 @@
     {{ end }}
 
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/prism.css">
 
 	{{ if (findRE "<pre" .Content 1) }}
 	<script src="/js/codeblock.js"></script>
@@ -35,6 +36,8 @@
 	<script src="/js/runner/rust.js"></script>
 	<script src="/js/runner/lua.js"></script>
 	<script src="/js/runner/other.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/components/prism-core.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
 	<script>
 		codeblock.init();
 	</script>

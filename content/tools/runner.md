@@ -8,7 +8,7 @@ date: 2022-02-08
 go
 --
 
-```go {code-block=":run"}
+```go {code="+xw"}
 func main() {
 	fmt.Println("hello, go!")
 }
@@ -18,7 +18,7 @@ rust
 ----
 
 
-```rust {code-block=":run"}
+```rust {code="+xw"}
 fn main() {
 	println!("hello, rust!");
 }
@@ -27,7 +27,7 @@ fn main() {
 c/c++
 -----
 
-```c {code-block="$:run"}
+```c {code="$+xw"}
 #include <stdio.h>
 
 int main() {
@@ -36,7 +36,7 @@ int main() {
 }
 ```
 
-```cpp {code-block="$:run"}
+```cpp {code="$+xw"}
 #include <iostream>
 
 int main() {
@@ -48,7 +48,7 @@ int main() {
 c#
 --
 
-```csharp {code-block=":run"}
+```csharp {code="+xw"}
 class Hello {
 	static void Main(string[] args)
 	{
@@ -60,21 +60,21 @@ class Hello {
 lua
 ---
 
-```lua {code-block=":run"}
+```lua {code="+xw"}
 print("hello, lua!")
 ```
 
 python
 ------
 
-```python {code-block=":run"}
+```python {code="+xw"}
 print("hello, python!")
 ```
 
 java
 ----
 
-```java {code-block=":run"}
+```java {code="+xw"}
 class Main {
     public static void main(String[ ] args) {
         System.out.println("hello java!");
@@ -85,34 +85,34 @@ class Main {
 javascript
 ----------
 
-```js {code-block=":run"}
+```js {code="+xw"}
 console.log("hello, javascript!");
 ```
 
 perl
 ----
 
-```perl {code-block=":run"}
+```perl {code="+xw"}
 print "hello, perl!";
 ```
 
 R
 -
 
-```r {code-block=":run"}
+```r {code="+xw"}
 print("hello R!")
 ```
 
 swift
 -----
 
-```swift {code-block=":run"}
+```swift {code="+xw"}
 print("hello swift!")
 ```
 
 php
 ---
 
-```php {code-block=":run"}
+```php {code="+xw"}
 <?php echo 'hello php!'; ?>
 ```
