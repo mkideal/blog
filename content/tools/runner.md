@@ -1,33 +1,69 @@
 ---
-title: "代码块在线运行"
+title: "代码在线运行"
 date: 2022-02-08
+abstract: 搜集多种编程语言的代码在线运行工具，所有代码均可编辑和运行。
+showAll: true
 ---
 
-搜集多种编程语言的代码在线运行工具。
+> go 语言默认会自动添加 `package main` 并且自动引入所需的标准库。
 
-go
---
+<span>
+<label for="languages" style="margin: 0">选择语言:</label>
+<select name="languages" id="languages-selector">
+  <option value="go">go</option>
+  <option value="rust">rust</option>
+  <option value="c">c</option>
+  <option value="cpp">c++</option>
+  <option value="csharp">c#</option>
+  <option value="lua">lua</option>
+  <option value="python">python</option>
+  <option value="java">java</option>
+  <option value="js">javascript</option>
+  <option value="perl">perl</option>
+  <option value="r">R</option>
+  <option value="swift">swift</option>
+  <option value="php">php</option>
+</select>
+</span>
+<style>
 
-```go {code="+xw"}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+	if (window.codeblock) {
+		var codes = {};
+		document.querySelectorAll('.highlight[hidden="true"]').forEach(function(h) {
+			var code = h.querySelector("pre > code");
+			var lang = code.getAttribute("data-lang");
+			if (lang) {
+				codes[codeblock.languageName(lang)] = code.innerText;
+			}
+		});
+		console.log("codes", codes);
+		codeblock.bindSelector({
+			selector: "#languages-selector",
+			editor: "global-code-editor",
+			codes: codes
+		});
+	} else {
+		console.log("codeblock undefined");
+	}
+})
+</script>
+
+```go {code="global-code-editor+xw" id="global-code-editor" class="line-numbers"}
 func main() {
 	fmt.Println("hello, go!")
 }
 ```
 
-rust
-----
-
-
-```rust {code="+xw"}
+```rust {hidden="true"}
 fn main() {
 	println!("hello, rust!");
 }
 ```
 
-c/c++
------
-
-```c {code="$+xw"}
+```c {hidden="true"}
 #include <stdio.h>
 
 int main() {
@@ -36,7 +72,7 @@ int main() {
 }
 ```
 
-```cpp {code="$+xw"}
+```cpp {hidden="true"}
 #include <iostream>
 
 int main() {
@@ -45,10 +81,7 @@ int main() {
 }
 ```
 
-c#
---
-
-```csharp {code="+xw"}
+```csharp {hidden="true"}
 class Hello {
 	static void Main(string[] args)
 	{
@@ -57,24 +90,15 @@ class Hello {
 }
 ```
 
-lua
----
-
-```lua {code="+xw"}
+```lua {hidden="true"}
 print("hello, lua!")
 ```
 
-python
-------
-
-```python {code="+xw"}
+```python {hidden="true"}
 print("hello, python!")
 ```
 
-java
-----
-
-```java {code="+xw"}
+```java {hidden="true"}
 class Main {
     public static void main(String[ ] args) {
         System.out.println("hello java!");
@@ -82,37 +106,22 @@ class Main {
 }
 ```
 
-javascript
-----------
-
-```js {code="+xw"}
+```js {hidden="true"}
 console.log("hello, javascript!");
 ```
 
-perl
-----
-
-```perl {code="+xw"}
+```perl {hidden="true"}
 print "hello, perl!";
 ```
 
-R
--
-
-```r {code="+xw"}
+```r {hidden="true"}
 print("hello R!")
 ```
 
-swift
------
-
-```swift {code="+xw"}
+```swift {hidden="true"}
 print("hello swift!")
 ```
 
-php
----
-
-```php {code="+xw"}
+```php {hidden="true"}
 <?php echo 'hello php!'; ?>
 ```

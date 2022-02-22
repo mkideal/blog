@@ -151,13 +151,17 @@ $y-medium: 1.0rem;
 		display: inline-block;
 		margin: 0 0;
 		padding: 1rem 1rem 1rem 1rem;
-		box-shadow: 2px 2px 6px #d8d8d8;
+		box-shadow: 1px 1px 3px #d8d8d8;
 		box-sizing: border-box;
 		border-radius: 8px;
 		border: 1px solid #d8d8d8;
 		width: 100%;
 		white-space: pre-wrap;
 		word-break: break-all;
+	}
+	pre code:focus {
+		outline: 0px solid transparent;
+		box-shadow: 2px 2px 6px #d8d8d8;
 	}
     .highlight {
         margin: $y-medium auto;

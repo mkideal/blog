@@ -1,0 +1,25 @@
+{{ define "main" }}
+<div class="container">
+    <article>
+        <header>
+			<h1 class="article-title" style="margin-bottom: 10px;"><i class="fas fa-tools" style="color: #0277BD"></i> {{.Title}}</h1>
+			<br/>
+        </header>
+
+        {{if .Params.abstract}}
+		<p>{{.Params.abstract}}</p>
+		{{ end }}
+
+        {{.Content}}
+        <br />
+    </article>
+</div>
+
+{{ if .Site.Params.utteranc.enable }}
+<hr />
+<script src="https://utteranc.es/client.js" repo="{{ .Site.Params.utteranc.repo }}" issue-term="pathname"
+    theme="github-light" crossorigin="anonymous" async>
+    </script>
+{{ end }}
+
+{{ end }}

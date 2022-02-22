@@ -22,20 +22,12 @@ if (!String.prototype.includes) {
  */
 var codeblock = {
 	initialized: false, /* initialized or not */
-	nextUUID: 0, /* used to allocate uuid */
 	runners: {}, /* code runners for each languages */
 	programs: {}, /* programs by program name */
 	blocks: {}, /* code blocks by id */
 	clipboard: null, /* clipboard API object */
+	highlighter: null, /* syntax highlighter */
 };
-
-/**
- * allocateUUID allocates an uuid
- */
-function allocateUUID() {
-	codeblock.nextUUID++;
-	return codeblock.nextUUID;
-}
 
 /**
  * guid allocates a guid
@@ -55,13 +47,11 @@ function guid() {
 /**
  * languageName get internal standard language name
  */
-function languageName(name) {
+exports.languageName = function(name) {
 	if (name) {
 		name = name.toLowerCase();
 	}
 	switch (name) {
-		case "c":
-			return "cpp";
 		case "c++":
 			return "cpp";
 		case "python":
@@ -127,11 +117,15 @@ function Block(id, lang, element) {
 	this.id = id;
 	this.lang = lang;
 	this.element = element;
+	this.resetHistory();
+}
+
+Block.prototype.resetHistory = function() {
 	this.history = [{
 		cursor: 0,
 		source: this.source,
 	}];
-}
+};
 
 Object.defineProperty(Block.prototype, "source", {
 	get: function() {
@@ -298,11 +292,15 @@ var spaceRegexp = /\s/;
  * add "run" button for codeblock
  */
 function addLanguageButton(options, parentNode, code) {
-	var lang = languageName(code.getAttribute(options.langAttrName));
+	var lang = exports.languageName(code.getAttribute(options.langAttrName));
 	if (!lang || !codeblock.runners[lang]) {
 		return;
 	}
-	var id = allocateUUID();
+	var id = code.id;
+	if (!id) {
+		id = guid();
+		code.id = id;
+	}
 	var highlight = code.parentNode.parentNode;
 
 	// parse "code" attributes: [programName][+xbew] | "-" | ""
@@ -349,7 +347,6 @@ function addLanguageButton(options, parentNode, code) {
 
 function setEditMode(options, block, undoButton) {
 	var code = block.element;
-	var lang = block.lang;
 	var lastSaveTime = new Date().getTime();
 	var lastInputTime = lastSaveTime;
 	var idleInterval = 500; // 500ms
@@ -426,11 +423,10 @@ function setEditMode(options, block, undoButton) {
 			} else if (size > 0) {
 				block.history[size-1].cursor = getCaret(code);
 			}
-			console.log('save history', block.history[block.history.length - 1]);
 			undoButton.style.visibility = 'visible';
 		}
 		lastInputTime = now;
-		updateCodeBlock(options, code, lang);
+		updateCodeBlock(code, block.lang);
 	});
 	code.addEventListener('compositionstart', function(e) {
 		code.setAttribute("compositionstart", "true");
@@ -442,11 +438,11 @@ function setEditMode(options, block, undoButton) {
 	code.style.whiteSpace = 'pre-wrap';
 }
 
-function updateCodeBlock(options, code, lang, cursor) {
-	if (options.highlighter) {
-		var grammer = options.highlighter.languages[lang];
+function updateCodeBlock(code, lang, cursor) {
+	if (codeblock.highlighter) {
+		var grammer = codeblock.highlighter.languages[lang];
 		if (grammer) {
-			var res = options.highlighter.highlight(code.innerText, grammer, lang);
+			var res = codeblock.highlighter.highlight(code.innerText, grammer, lang);
 			if (cursor == undefined || cursor == null) {
 				cursor = getCaret(code);
 			}
@@ -465,7 +461,7 @@ function addRunButton(options, parentNode, code, id, program) {
 	button.innerHTML = runIcon;
 	button.addEventListener("click", function() {
 		button.innerHTML = runningIcon;
-		clearCodeOutput(options, code);
+		clearCodeOutput(code);
 		runProgram(id, program).then(
 			function(res) {
 				if (res.Errors) {
@@ -506,9 +502,9 @@ function addUndoButton(options, parentNode, block) {
 		}
 		var last = block.history[block.history.length - 1];
 		block.element.innerText = last.source;
-		updateCodeBlock(options, block.element, block.lang, last.cursor);
+		updateCodeBlock(block.element, block.lang, last.cursor);
 		button.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
-		clearCodeOutput(options, block.element);
+		clearCodeOutput(block.element);
 	});
 	parentNode.appendChild(button);
 	return button;
@@ -556,8 +552,8 @@ function runProgram(id, program) {
 /**
  * clears code output
  */
-function clearCodeOutput(options, code) {
-	var child = code.parentNode.parentNode.querySelector("." + options.codeOutputClass);
+function clearCodeOutput(code) {
+	var child = code.parentNode.parentNode.querySelector('[for="' + code.id + '"]');
 	if (child) {
 		code.parentNode.parentNode.removeChild(child);
 	}
@@ -567,23 +563,56 @@ function clearCodeOutput(options, code) {
  * creates code output
  */
 function createCodeOutput(options, code, results) {
-	clearCodeOutput(options, code);
+	clearCodeOutput(code);
 	var child = document.createElement("pre");
-	child.className = options.codeOutputClass;
+	child.setAttribute("for", code.id);
 	var output = document.createElement("code");
 	child.appendChild(output);
 	if (options.outputPrefix && typeof options.outputPrefix === 'string') {
 		output.insertAdjacentHTML('beforeend', options.outputPrefix);
 	}
-	for (var i = 0; i < results.length; i++) {
-		var span = document.createElement("span");
-		if (results[i].Kind === exports.Stderr) {
-			span.style = options.errorOutputStyle;
-		}
-		span.innerText = results[i].Message;
-		output.appendChild(span);
-	}
 	code.parentNode.after(child);
+	appendOutput(options, results, output, 0, false);
+}
+
+function appendOutput(options, results, output, index, delayed) {
+	for (var i = index; i < results.length; i++) {
+		var e = results[i];
+		if (!delayed && e.Delay > 0) {
+			var nextIndex = i;
+			console.log("timeout:", e.Delay);
+			setTimeout(function() {
+				appendOutput(options, results, output, nextIndex, true);
+			}, e.Delay / 1e6);
+			return;
+		}
+		delayed = false;
+		if (results[i].Kind === exports.Stderr) {
+			var span = document.createElement("span");
+			span.innerText = results[i].Message;
+			span.style = options.errorOutputStyle;
+			output.appendChild(span);
+			continue;
+		}
+		var hasFlush = results[i].Message.startsWith("\f");
+		if (hasFlush && output.lastChild && output.lastChild.getAttribute("data-has-flush") === "true") {
+			output.lastChild.innerText = results[i].Message;
+		} else {
+			var span = document.createElement("span");
+			span.innerText = results[i].Message;
+			if (hasFlush) {
+				span.setAttribute("data-has-flush", "true");
+			}
+			output.appendChild(span);
+		}
+	}
+}
+
+function flushOutputContent(output, content) {
+	var span = document.createElement("span");
+	span.innerText = content.join('');
+	output.appendChild(output);
+	context.splice(0, content.length);
 }
 
 function getDefaultValue(value, defaultValue) {
@@ -601,16 +630,7 @@ exports.init = function(options) {
 	codeblock.initialized = true;
 	options = options || {};
 
-	// Request JSON:
-	//	  {
-	//		  classes: false
-	//		  language: "languageName"
-	//		  style: "stylename"
-	//		  text: "code"
-	//	  }
-	//
-	// Response JSON: {html: ""}
-	options.highlighter = getDefaultValue(options.highlighter, window.Prism ? window.Prism : null);
+	codeblock.highlighter = getDefaultValue(options.highlighter, window.Prism ? window.Prism : null);
 	options.highlightStyle = options.highlightStyle || "pygments";
 
 	options.codeSelector = "pre > code";
@@ -666,6 +686,47 @@ exports.init = function(options) {
 			}
 			document.body.appendChild(script);
 		}
+	});
+}
+
+exports.bindSelector = function(options) {
+	console.log('bindSelector');
+	options.codes = options.codes || {};
+	var selector = document.querySelector(options.selector);
+	var highlight = document.getElementById(options.editor);
+	if (!highlight) {
+		console.log("bindSelector: highlight not found");
+		return;
+	}
+	var code = highlight.querySelector("pre > code");
+	if (!code) {
+		console.log("bindSelector: code not found");
+		return;
+	}
+	var block = codeblock.blocks[code.id];
+	if (!block) {
+		console.log("bindSelector: block %s not found", code.id);
+		return;
+	}
+	var languageCodes = {};
+	selector.addEventListener("change", function(e) {
+		var oldLang = code.getAttribute("data-lang");
+		var lang = exports.languageName(e.target.value);
+		if (oldLang === lang) {
+			return;
+		}
+		if (oldLang) {
+			languageCodes[oldLang] = code.innerText;
+		}
+		console.log("language changed from %s to %s", oldLang, lang);
+		code.className = "language-" + lang;
+		code.setAttribute("data-lang", lang);
+		code.innerText = languageCodes[lang] || options.codes[lang] || "";
+		block.lang = lang;
+		block.resetHistory();
+		updateCodeBlock(code, lang);
+		clearCodeOutput(code);
+		code.blur();
 	});
 }
 
