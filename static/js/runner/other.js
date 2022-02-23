@@ -96,5 +96,6 @@ codeblock.registerRunner("py", Runner);
 codeblock.registerRunner("js", Runner);
 codeblock.registerRunner("perl", Runner);
 codeblock.registerRunner("php", Runner);
+codeblock.registerRunner("kt", Runner);
 
 })();

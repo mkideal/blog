@@ -23,6 +23,7 @@ showAll: true
   <option value="r">R</option>
   <option value="swift">swift</option>
   <option value="php">php</option>
+  <option value="kotlin">kotlin</option>
 </select>
 </span>
 <style>
@@ -126,4 +127,10 @@ print("hello swift!")
 
 ```php {hidden="true"}
 <?php echo 'hello php!'; ?>
+```
+
+```kotlin {hidden="true"}
+fun main(args: Array<String>) {
+	println("hello, kotlin!")
+}
 ```
