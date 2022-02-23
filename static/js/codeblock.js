@@ -210,7 +210,10 @@ function addCopyButton(options, parentNode, code) {
 	button.setAttribute("data-toggle", "tooltip");
 	button.setAttribute("data-placement", "bottom");
 	button.setAttribute("title", "Copy");
-	$(button).tooltip();
+	$(button).tooltip({
+		trigger: "hover",
+		delay: {show: 250, hide: 250}
+	});
 	button.addEventListener("click", function() {
 		codeblock.clipboard.writeText(code.innerText).then(
 			function() {
@@ -466,7 +469,10 @@ function addRunButton(options, parentNode, code, id, program) {
 	button.setAttribute("data-toggle", "tooltip");
 	button.setAttribute("data-placement", "bottom");
 	button.setAttribute("title", "Run");
-	$(button).tooltip();
+	$(button).tooltip({
+		trigger: "hover",
+		delay: {show: 250, hide: 250}
+	});
 	button.addEventListener("click", function() {
 		button.innerHTML = runningIcon;
 		clearCodeOutput(code);
@@ -506,7 +512,10 @@ function addUndoButton(options, parentNode, block) {
 	button.setAttribute("data-toggle", "tooltip");
 	button.setAttribute("data-placement", "bottom");
 	button.setAttribute("title", "Undo");
-	$(button).tooltip();
+	$(button).tooltip({
+		trigger: "hover",
+		delay: {show: 250, hide: 250}
+	});
 	button.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
 	button.addEventListener("click", function() {
 		if (block.history.length > 1) {
