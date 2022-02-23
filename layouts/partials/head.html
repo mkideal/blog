@@ -47,7 +47,14 @@
 			$('[data-toggle="tooltip"]').tooltip({
 				trigger: "hover",
 				delay: {show: 250, hide: 250}
-			})
-		})
+			});
+			if(navigator && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+				$(document).on('shown.bs.tooltip', function (e) {
+					setTimeout(function () {
+						$(e.target).tooltip('hide');
+					}, 2000);
+				});
+			}
+		});
 	</script>
 </head>
