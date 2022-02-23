@@ -23,8 +23,8 @@
 		{{ end }}
 
 		{{ if .Params.toc }}
-		<aside>
-			<span>目&nbsp;&nbsp;录:</span>
+		<aside {{if .Params.tocType}}data-toc-type="{{.Params.tocType}}"{{end}}>
+			<span>目录</span>
 			{{ .TableOfContents }}
 		</aside>
 		{{ end }}

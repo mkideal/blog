@@ -3,6 +3,19 @@ a {
     text-decoration: none;
 }
 
+select {
+	background-color: white;
+    border: solid 1px #aaaaaa;
+	box-shadow: 1px 1px 2px #d8d8d8;
+    border-radius: 4px;
+	padding: 0.2rem 0.25rem;
+    outline: 0;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
 .badge {
     display: inline-block;
     min-width: 16px; /* pixel unit */
@@ -63,11 +76,6 @@ a {
     padding: 0px;
 }
 
-.app-item-content-header-title {
-    max-width: calc(100% - 150px);
-    padding: 0px;
-}
-
 .app-item-time {
     color: grey;
 }
@@ -109,31 +117,73 @@ a {
 	background-color: white !important;
 }
 
-select {
-	background-color: white;
-    border: solid 1px #aaaaaa;
-	box-shadow: 1px 1px 2px #d8d8d8;
-    border-radius: 4px;
-	padding: 0.2rem 0.25rem;
-    outline: 0;
+:root {
+	--toc-float-right-width: 300px;
+	--toc-float-right-padding: 60px;
 }
 
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
+[data-toc-type="float-right"] {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 16px;
+	padding-right: 16px;
+	position: fixed;
+	top: 108px;
+	right: calc(var(--toc-float-right-padding) - var(--toc-float-right-width));
+	width: calc(var(--toc-float-right-width));
+	overflow-y: scroll;
+	max-height: 70%;
+	background-color: #fff;
+	border: 1px solid #91c89c;
+	border-radius: 4px;
+	opacity: 0.75;
 
-    position: absolute;
-    z-index: 1;
-    top: 100%;
-    left: 50%;
-    margin-left: -60px;
+	transition-property: right, width, height, opacity;
+	transition-duration: 0.5s;
+	z-index: 2;
 }
 
-.tooltip:hover .tooltiptext {
-    visibility: visible;
+@media (max-width: 640px) {
+	[data-toc-type="float-right"] {
+		right: calc(var(--toc-float-right-padding) - 50vw);
+		width: calc(50vw);
+	}
+}
+
+#content [data-toc-type="float-right"] a {
+	color: grey;
+}
+
+#content [data-toc-type="float-right"] ul {
+	padding-left: 1.5em;
+}
+
+/* (2 * var(--toc-float-right-width + 10px) + pageWidth) */
+@media (min-width: 1440px) {
+	[data-toc-type="float-right"] {
+		opacity: 1;
+		right: -20px;
+	}
+}
+
+@media (max-width: 1440px) {
+	[data-toc-type="float-right"]:not(:hover):not(:focus) {
+		height: 46px;
+	}
+}
+
+[data-toc-type="float-right"]:hover, [data-toc-type="float-right"]:focus {
+	opacity: 1;
+	right: -20px;
+}
+
+[data-toc-type="float-right"] ul {
+	padding-inline-start: 20px;
+}
+
+[data-toc-type="float-right"] li {
+	word-break: normal;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }

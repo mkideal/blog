@@ -2,6 +2,7 @@
 title: "Go 泛型初步"
 date: 2022-02-12
 toc: true
+tocType: "float-right"
 keywords: ["go", "generic", "type parameter"]
 abstract: "Go 1.18 版本之后正式引入泛型，它被称作类型参数（type parameters），本文初步介绍 Go 中泛型的使用。"
 ---

@@ -1,5 +1,5 @@
 // Sizes
-$max-width: {{ .Param "style.pageWidth" | default "750px;" }};
+$max-width: {{ .Param "style.pageWidth" }};
 $avatar-size: {{ .Param "style.avatarSize" | default "90px;" }};
 
 // Colors
@@ -48,13 +48,20 @@ $y-medium: 1.0rem;
     font-family: $font-family;
     line-height: 1.75;
 }
+
+:root {
+	--max-width: $max-width 
+}
+
 .container {
     max-width: $max-width;
 }
+
 .navbar-brand {
     @extend %link-dark;
     font-size: 2rem;
 }
+
 .nav-link {
     @extend %link-default;
 }
