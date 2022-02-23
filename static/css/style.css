@@ -136,10 +136,12 @@ html {
 	background-color: #fff;
 	border: 1px solid #91c89c;
 	border-radius: 4px;
-	opacity: 0.75;
+	opacity: 0.8;
 
-	transition-property: right, width, height, opacity;
+	transition-property: right, width, max-height, opacity;
 	transition-duration: 0.5s;
+	transition-timing-function: ease-in-out;
+
 	z-index: 2;
 }
 
@@ -155,7 +157,8 @@ html {
 }
 
 #content [data-toc-type="float-right"] ul {
-	padding-left: 1.5em;
+	padding-left: 0;
+	margin-bottom: 0;
 }
 
 /* (2 * var(--toc-float-right-width + 10px) + pageWidth) */
@@ -168,7 +171,7 @@ html {
 
 @media (max-width: 1440px) {
 	[data-toc-type="float-right"]:not(:hover):not(:focus) {
-		height: 46px;
+		max-height: 46px;
 	}
 }
 
