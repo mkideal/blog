@@ -24,6 +24,34 @@ showAll: true
   <option value="swift">swift</option>
   <option value="php">php</option>
   <option value="kotlin">kotlin</option>
+  <option value="scala">scala</option>
+  <option value="groovy">groovy</option>
+  <option value="haskell">haskell</option>
+  <option value="commonlisp">commonlisp</option>
+  <option value="elixir">elixir</option>
+  <option value="fsharp">f#</option>
+  <option value="assembly">assembly</option>
+  <option value="ocaml">ocaml</option>
+  <option value="bash">bash</option>
+  <option value="typescript">typescript</option>
+  <option value="prolog">prolog</option>
+  <option value="jshell">jshell</option>
+  <option value="tcl">tcl</option>
+  <option value="ada">ada</option>
+  <option value="d">D</option>
+  <option value="erlang">erlang</option>
+  <option value="fortran">fortran</option>
+  <option value="racket">racket</option>
+  <option value="vb">Visual Basic</option>
+  <option value="clojure">clojure</option>
+  <option value="cobol">cobol</option>
+  <option value="pascal">pascal</option>
+  <option value="octave">octave</option>
+  <option value="mysql">mysql</option>
+  <option value="postgresql">postgresql</option>
+  <option value="sqlite">sqlite</option>
+  <option value="mongodb">mongodb</option>
+  <option value="redis">redis</option>
 </select>
 </span>
 <style>
@@ -134,3 +162,190 @@ fun main(args: Array<String>) {
 	println("hello, kotlin!")
 }
 ```
+
+```scala {hidden="true"}
+object Main {
+	def main(args: Array[String]): Unit = {
+		println("hello, scala!")
+	}
+}
+```
+
+```groovy {hidden="true"}
+println "hello groovy!"
+```
+
+```haskell {hidden="true"}
+main = putStrLn "hello, haskell!"
+```
+
+```lisp {hidden="true"}
+(print "hello, common lisp!")
+```
+
+```elixir {hidden="true"}
+IO.puts "hello, elixir!"
+```
+
+```fsharp {hidden="true"}
+open System
+printfn "hello, fsharp!"
+```
+
+```asm {hidden="true"}
+section .data
+	hello:     db 'hello asm!',10      ; 'hello asm!' plus a linefeed character
+	helloLen:  equ $-hello             ; Length of the 'hello asm!' string
+
+section .text
+	global _start
+
+_start:
+	mov eax,4            ; The system call for write (sys_write)
+	mov ebx,1            ; File descriptor 1 - standard output
+	mov ecx,hello        ; Put the offset of hello in ecx
+	mov edx,helloLen     ; helloLen is a constant, so we don't need to say
+	                     ;  mov edx,[helloLen] to get it's actual value
+	int 80h              ; Call the kernel
+	mov eax,1            ; The system call for exit (sys_exit)
+	mov ebx,0            ; Exit with return "code" of 0 (no error)
+	int 80h;
+```
+
+```ocaml {hidden="true"}
+print_string "hello ocaml!"
+```
+
+```bash {hidden="true"}
+echo "hello bash!"
+```
+
+```ts {hidden="true"}
+const name = "typescript";
+console.log(`hello ${name}!`);
+```
+
+```prolog {hidden="true"}
+:- initialization(main).
+main :- write('hello prolog!').
+```
+
+<div class="highlight" hidden>
+<pre class="language-jshell"><code class="language-jshell" data-lang="jshell">System.out.println("hello jshell!");</code></pre>
+</div>
+
+```tcl {hidden="true"}
+puts "hello, tcl!"
+```
+
+```ada {hidden="true"}
+with Ada.Text_IO; use Ada.Text_IO;
+procedure Hello is
+begin
+	Put_Line ("hello, ada!");
+end Hello;
+```
+
+```d {hidden="true"}
+import std.stdio;
+
+void main()
+{
+	writeln("hello, d!");
+}
+```
+
+```erlang {hidden="true"}
+-module(helloworld).
+-export([start/0]).
+start() ->
+		io:fwrite("hello erlang!").
+```
+
+```fortran {hidden="true"}
+program hello
+	print *, "hello fortran!"
+end program hello
+```
+
+```racket {hidden="true"}
+#lang racket/base
+(print "hello, racket!")
+```
+
+```vb {hidden="true"}
+Public Module Program
+	Public Sub Main(args() As string)
+		Console.WriteLine("hello, vb!")
+	End Sub
+End Module
+```
+
+```clojure {hidden="true"}
+(defn greetings [msg]
+(println (format "Hello %s" msg)))
+
+(greetings "clojure!")
+```
+
+```cobol {hidden="true"}
+IDENTIFICATION DIVISION.
+PROGRAM-ID. HELLO-WORLD.
+PROCEDURE DIVISION.
+DISPLAY 'hello cobol!'.
+STOP RUN.
+```
+
+<div class="highlight" hidden>
+<pre class="language-pascal"><code class="language-pascal" data-lang="pascal">program Hello;
+begin
+  writeln ('hello pascal!')
+end.</code></pre>
+</div>
+
+```octave {hidden="true"}
+disp('hello octave!')
+```
+
+
+```mysql {hidden="true"}
+CREATE TABLE Hello (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
+INSERT INTO Hello VALUES (1, 'hello, mysql!');
+SELECT * FROM Hello WHERE id = '1';
+```
+
+```postgresql {hidden="true"}
+CREATE TABLE Hello (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
+INSERT INTO Hello VALUES (1, 'hello, postgresql!');
+SELECT * FROM Hello WHERE id = '1';
+```
+
+<div class="highlight" hidden>
+<pre class="language-sqlite"><code class="language-sqlite" data-lang="sqlite">CREATE TABLE Hello (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
+INSERT INTO Hello VALUES (1, 'hello, sqlite!');
+SELECT * FROM Hello WHERE id = '1';
+</code></pre>
+</div>
+
+<div class="highlight" hidden>
+<pre class="language-mongodb"><code class="language-mongodb" data-lang="mongodb">db.helloworld.insertMany([
+  {id: 1, name: 'hello, mongodb' },
+]);
+db.employees.find({id: 1});
+</code></pre>
+</div>
+
+<div class="highlight" hidden>
+<pre class="language-redis"><code class="language-redis" data-lang="redis">set key 'hello, redis!'
+get key
+</code></pre>
+</div>

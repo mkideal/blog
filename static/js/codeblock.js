@@ -66,6 +66,116 @@ exports.languageName = function(name) {
 			return "cs";
 		case "kotlin":
 			return "kt";
+		case "lisp":
+			return "commonlisp";
+		case "f#":
+			return "fs";
+		case "asm":
+			return "assembly";
+		case "ts":
+			return "typescript";
+		default:
+			return name;
+	}
+}
+
+exports.extensionName = function(name) {
+	name = exports.languageName(name);
+	switch (name) {
+		case "haskell":
+			return "hs";
+		case "csharp":
+			return "cs";
+		case "fsharp":
+			return "fs";
+		case "rust":
+			return "rs";
+		case "commonlisp":
+			return "lsp";
+		case "assembly":
+			return "asm";
+		case "ocaml":
+			return "ml";
+		case "bash":
+			return "sh";
+		case "typescript":
+			return "ts";
+		case "prolog":
+			return "pl";
+		case "jshell":
+			return "jsh";
+		case "ada":
+			return "adb";
+		case "erlang":
+			return "erl";
+		case "fortran":
+			return "ftn";
+		case "racket":
+			return "rkt";
+		case "clojure":
+			return "clj";
+		case "cobol":
+			return "cbl";
+		case "pascal":
+			return "pas";
+		case "octave":
+			return "m";
+		case "mysql":
+			return "sql";
+		case "postgresql":
+			return "sql";
+		case "sqlite":
+			return "sql";
+		case "mongodb":
+			return "js";
+		default:
+			return name;
+	}
+}
+
+exports.modeName = function(name) {
+	name = exports.languageName(name);
+	switch (name) {
+		case "commonlisp":
+			return "lisp";
+		case "assembly":
+			return "assembly_x86";
+		case "ocaml":
+			return "perl";
+		case "bash":
+			return "tcl";
+		case "typescript":
+			return "javascript";
+		case "prolog":
+			return "javascript";
+		case "jshell":
+			return "java";
+		case "d":
+			return "c_cpp";
+		case "erlang":
+			return "c_cpp";
+		case "racket":
+			return "perl";
+		case "vb":
+			return "vbscript";
+		case "clojure":
+			return "lisp";
+		case "cobol":
+			return "assembly_x86";
+		case "pascal":
+			return "javascript";
+		case "octave":
+			return "javascript";
+		case "mysql":
+			return "sql";
+		case "postgresql":
+			return "sql";
+		case "sqlite":
+			return "sql";
+		case "mongodb":
+			return "javascript";
+		case "redis":
+			return "javascript";
 		default:
 			return name;
 	}
