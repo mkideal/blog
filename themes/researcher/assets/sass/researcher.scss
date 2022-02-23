@@ -169,6 +169,9 @@ $y-medium: 1.0rem;
             padding: 8px 8px;
         }
     }
+	code[class*=language-], pre[class*=language-] {
+		font-family: $font-family;
+	}
 }
 #footer {
     a {
