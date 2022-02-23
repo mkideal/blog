@@ -143,10 +143,10 @@ html {
 	z-index: 2;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 400px) {
 	[data-toc-type="float-right"] {
-		right: calc(var(--toc-float-right-padding) - 50vw);
-		width: calc(50vw);
+		right: calc(var(--toc-float-right-padding) - 75vw);
+		width: calc(75vw);
 	}
 }
 
