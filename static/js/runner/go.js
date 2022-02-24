@@ -73,6 +73,6 @@ Runner.prototype.format = function() {
 /**
  * register Runner
  */
-codeblock.registerRunner("go", Runner);
+codeblock.register("go", Runner);
 
 })();

@@ -51,7 +51,7 @@ Runner.prototype.run = function() {
 				if (prev && prev.innerText === "Output") {
 					events.push({
 						Message: area.innerText.substring(0, area.innerText.length - 1),
-						Kind: "stdout"
+						Kind: codeblock.Stdout
 					});
 				}
 			})
@@ -63,7 +63,7 @@ Runner.prototype.run = function() {
 /**
  * register Runner
  */
-codeblock.registerRunner("lua", Runner);
+codeblock.register("lua", Runner);
 
 })();
 

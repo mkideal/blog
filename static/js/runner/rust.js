@@ -50,14 +50,14 @@ Runner.prototype.run = function() {
 				resolve({
 					Events: [{
 						Message: result.stdout,
-						Kind: "stdout"
+						Kind: codeblock.Stdout
 					}]
 				});
 			} else {
 				resolve({
 					Events: [{
 						Message: result.stderr,
-						Kind: "stderr"
+						Kind: codeblock.Stderr
 					}]
 				});
 			}
@@ -68,6 +68,6 @@ Runner.prototype.run = function() {
 /**
  * register Runner
  */
-codeblock.registerRunner("rust", Runner);
+codeblock.register("rust", Runner);
 
 })();

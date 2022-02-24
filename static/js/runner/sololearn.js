@@ -8,9 +8,17 @@ var playground = {
 
 function Runner(lang) {
 	this.lang = lang;
-	this.sourceLang = this.lang;
 	this.source = null;
 }
+
+var languagesMapping = {};
+
+languagesMapping[codeblock.languages.python] = "py";
+languagesMapping[codeblock.languages.javascript] = "js";
+languagesMapping[codeblock.languages.csharp] = "cs";
+languagesMapping[codeblock.languages.c] = "cpp";
+languagesMapping[codeblock.languages.perl] = "cpp";
+languagesMapping[codeblock.languages.kotlin] = "kt";
 
 /**
  * implements Runner.parse method
@@ -22,8 +30,7 @@ Runner.prototype.parse = function(blocks) {
 	}
 	this.source = source.join('\n');
 	switch (this.lang) {
-		case "perl":
-			this.sourceLang = "cpp";
+		case codeblock.languages.perl:
 			this.source = '#include <fstream>\n\nconstexpr char perlString[]=\nR"(\n' +
 				this.source +
 				'\n)";\n\n' +
@@ -50,7 +57,7 @@ Runner.prototype.run = function() {
 		xhr.open('POST', playground.run);
 		xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
 		var data = JSON.stringify({
-			language: self.sourceLang === "c" ? "cpp" : self.sourceLang,
+			language: languagesMapping[self.lang] || self.lang,
 			input: "",
 			code: self.source
 		});
@@ -60,14 +67,14 @@ Runner.prototype.run = function() {
 					resolve({
 						Events: [{
 							Message: result.data.output,
-							Kind: "stderr"
+							Kind: codeblock.Stderr
 						}]
 					});
 				} else {
 					resolve({
 						Events: [{
 							Message: result.data.output,
-							Kind: "stdout"
+							Kind: codeblock.Stdout
 						}]
 					});
 				}
@@ -75,7 +82,7 @@ Runner.prototype.run = function() {
 				resolve({
 					Events: [{
 						Message: "error",
-						Kind: "stderr"
+						Kind: codeblock.Stderr
 					}]
 				});
 			}
@@ -86,16 +93,16 @@ Runner.prototype.run = function() {
 /**
  * register Runner
  */
-codeblock.registerRunner("c", Runner);
-codeblock.registerRunner("cpp", Runner);
-codeblock.registerRunner("cs", Runner);
-codeblock.registerRunner("java", Runner);
-codeblock.registerRunner("swift", Runner);
-codeblock.registerRunner("r", Runner);
-codeblock.registerRunner("py", Runner);
-codeblock.registerRunner("js", Runner);
-codeblock.registerRunner("perl", Runner);
-codeblock.registerRunner("php", Runner);
-codeblock.registerRunner("kt", Runner);
+codeblock.register(codeblock.languages.c, Runner);
+codeblock.register(codeblock.languages.cpp, Runner);
+codeblock.register(codeblock.languages.csharp, Runner);
+codeblock.register(codeblock.languages.java, Runner);
+codeblock.register(codeblock.languages.swift, Runner);
+codeblock.register(codeblock.languages.r, Runner);
+codeblock.register(codeblock.languages.python, Runner);
+codeblock.register(codeblock.languages.javascript, Runner);
+codeblock.register(codeblock.languages.perl, Runner);
+codeblock.register(codeblock.languages.php, Runner);
+codeblock.register(codeblock.languages.kotlin, Runner);
 
 })();

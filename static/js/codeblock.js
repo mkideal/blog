@@ -30,6 +30,132 @@ var codeblock = {
 };
 
 /**
+ * languages list all predecalred language names
+ */
+exports.languages = {
+	go: "go",
+	rust: "rust",
+	lua: "lua",
+	c: "c",
+	cpp: "cpp",
+	csharp: "csharp",
+	java: "java",
+	swift: "swift",
+	r: "r",
+	python: "python",
+	javascript: "javascript",
+	perl: "perl",
+	php: "php",
+	kotlin: "kotlin",
+	scala: "scala",
+	groovy: "groovy",
+	haskell: "haskell",
+	lisp: "lisp",
+	elixir: "elixir",
+	fsharp: "fsharp",
+	assembly: "assembly",
+	ocaml: "ocaml",
+	bash: "bash",
+	typescript: "typescript",
+	prolog: "prolog",
+	jshell: "jshell",
+	tcl: "tcl",
+	ada: "ada",
+	d: "d",
+	erlang: "erlang",
+	fortran: "fortran",
+	racket: "racket",
+	vb: "vb",
+	clojure: "clojure",
+	cobol: "cobol",
+	pascal: "pascal",
+	octave: "octave",
+	mysql: "mysql",
+	postgresql: "postgresql",
+	sqlite: "sqlite",
+	mongodb: "mongodb",
+	redis: "redis",
+};
+
+var languageAliases = {
+	"c++": exports.languages.cpp,
+	"py": exports.languages.python,
+	"golang": exports.languages.go,
+	"js": exports.languages.javascript,
+	"ts": exports.languages.typescript,
+	"cs": exports.languages.csharp,
+	"c#": exports.languages.csharp,
+	"f#": exports.languages.fsharp,
+	"fs": exports.languages.fsharp,
+	"kt": exports.languages.kotlin,
+	"lisp": exports.languages.lisp,
+	"asm": exports.languages.assembly,
+}
+
+/**
+ * extensions of source filename
+ */
+var extensions = {};
+
+extensions[exports.languages.haskell] = "hs";
+extensions[exports.languages.csharp] = "cs";
+extensions[exports.languages.fsharp] = "fs";
+extensions[exports.languages.rust] = "rs";
+extensions[exports.languages.lisp] = "lsp";
+extensions[exports.languages.assembly] = "asm";
+extensions[exports.languages.ocaml] = "ml";
+extensions[exports.languages.bash] = "sh";
+extensions[exports.languages.typescript] = "ts";
+extensions[exports.languages.prolog] = "pl";
+extensions[exports.languages.jshell] = "jsh";
+extensions[exports.languages.ada] = "adb";
+extensions[exports.languages.erlang] = "erl";
+extensions[exports.languages.fortran] = "ftn";
+extensions[exports.languages.racket] = "rkt";
+extensions[exports.languages.clojure] = "clj";
+extensions[exports.languages.cobol] = "cbl";
+extensions[exports.languages.pascal] = "pas";
+extensions[exports.languages.octave]= "m";
+extensions[exports.languages.mysql] = "sql";
+extensions[exports.languages.postgresql] = "sql";
+extensions[exports.languages.sqlite] = "sql";
+extensions[exports.languages.mongodb] = "js";
+
+var syntaxAliases = {};
+
+syntaxAliases[exports.languages.mysql] = "sql";
+syntaxAliases[exports.languages.postgresql] = "sql";
+syntaxAliases[exports.languages.sqlite] = "sql";
+syntaxAliases[exports.languages.mongodb] = "js";
+syntaxAliases[exports.languages.redis] = "bash";
+syntaxAliases[exports.languages.jshell] = "java";
+syntaxAliases[exports.languages.assembly] = "nasm";
+syntaxAliases[exports.languages.octave] = "matlab";
+
+/**
+ * languageName get predecalred language name
+ */
+exports.languageName = function(lang) {
+	if (lang) {
+		lang = lang.toLowerCase();
+	}
+	return languageAliases[lang] || lang;
+}
+
+/**
+ * extensionName returns source file extension by language name
+ */
+exports.extensionName = function(lang) {
+	lang = exports.languageName(lang);
+	return extensions[lang] || lang;
+}
+
+exports.syntaxName = function(lang) {
+	lang = exports.languageName(lang);
+	return syntaxAliases[lang] || lang;
+}
+
+/**
  * guid allocates a guid
  */
 function guid() {
@@ -43,143 +169,6 @@ function guid() {
 		return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
 	});
 };
-
-/**
- * languageName get internal standard language name
- */
-exports.languageName = function(name) {
-	if (name) {
-		name = name.toLowerCase();
-	}
-	switch (name) {
-		case "c++":
-			return "cpp";
-		case "python":
-			return "py";
-		case "golang":
-			return "go";
-		case "javascript":
-			return "js";
-		case "csharp":
-			return "cs";
-		case "c#":
-			return "cs";
-		case "kotlin":
-			return "kt";
-		case "lisp":
-			return "commonlisp";
-		case "f#":
-			return "fs";
-		case "asm":
-			return "assembly";
-		case "ts":
-			return "typescript";
-		default:
-			return name;
-	}
-}
-
-exports.extensionName = function(name) {
-	name = exports.languageName(name);
-	switch (name) {
-		case "haskell":
-			return "hs";
-		case "csharp":
-			return "cs";
-		case "fsharp":
-			return "fs";
-		case "rust":
-			return "rs";
-		case "commonlisp":
-			return "lsp";
-		case "assembly":
-			return "asm";
-		case "ocaml":
-			return "ml";
-		case "bash":
-			return "sh";
-		case "typescript":
-			return "ts";
-		case "prolog":
-			return "pl";
-		case "jshell":
-			return "jsh";
-		case "ada":
-			return "adb";
-		case "erlang":
-			return "erl";
-		case "fortran":
-			return "ftn";
-		case "racket":
-			return "rkt";
-		case "clojure":
-			return "clj";
-		case "cobol":
-			return "cbl";
-		case "pascal":
-			return "pas";
-		case "octave":
-			return "m";
-		case "mysql":
-			return "sql";
-		case "postgresql":
-			return "sql";
-		case "sqlite":
-			return "sql";
-		case "mongodb":
-			return "js";
-		default:
-			return name;
-	}
-}
-
-exports.modeName = function(name) {
-	name = exports.languageName(name);
-	switch (name) {
-		case "commonlisp":
-			return "lisp";
-		case "assembly":
-			return "assembly_x86";
-		case "ocaml":
-			return "perl";
-		case "bash":
-			return "tcl";
-		case "typescript":
-			return "javascript";
-		case "prolog":
-			return "javascript";
-		case "jshell":
-			return "java";
-		case "d":
-			return "c_cpp";
-		case "erlang":
-			return "c_cpp";
-		case "racket":
-			return "perl";
-		case "vb":
-			return "vbscript";
-		case "clojure":
-			return "lisp";
-		case "cobol":
-			return "assembly_x86";
-		case "pascal":
-			return "javascript";
-		case "octave":
-			return "javascript";
-		case "mysql":
-			return "sql";
-		case "postgresql":
-			return "sql";
-		case "sqlite":
-			return "sql";
-		case "mongodb":
-			return "javascript";
-		case "redis":
-			return "javascript";
-		default:
-			return name;
-	}
-}
 
 // code examples
 //
@@ -230,6 +219,7 @@ function Block(id, lang, element) {
 	this.lang = lang;
 	this.element = element;
 	this.resetHistory();
+	this.buttons = {};
 }
 
 Block.prototype.resetHistory = function() {
@@ -246,9 +236,9 @@ Object.defineProperty(Block.prototype, "source", {
 });
 
 /**
- * registerRunner registers code runner for specific program language
+ * register registers code runner for specific program language
  */
-exports.registerRunner = function(lang, runner) {
+exports.register = function(lang, runner) {
 	codeblock.runners[lang] = runner;
 }
 
@@ -457,9 +447,10 @@ function addLanguageButton(options, parentNode, code) {
 	if (!runnable) {
 		return;
 	}
-	addRunButton(options, parentNode, code, id, program);
+	block.buttons["run"] = addRunButton(options, parentNode, code, id, program);
 	if (modes.includes(kModeWrite)) {
 		var button = addUndoButton(options, parentNode, block);
+		block.buttons["undo"] = button;
 		setEditMode(options, block, button);
 	}
 }
@@ -559,7 +550,7 @@ function setEditMode(options, block, undoButton) {
 
 function updateCodeBlock(code, lang, cursor) {
 	if (codeblock.highlighter) {
-		var grammer = codeblock.highlighter.languages[lang];
+		var grammer = codeblock.highlighter.languages[exports.syntaxName(lang)];
 		if (grammer) {
 			var res = codeblock.highlighter.highlight(code.innerText, grammer, lang);
 			if (cursor == undefined || cursor == null) {
@@ -852,7 +843,8 @@ exports.bindSelector = function(options) {
 			languageCodes[oldLang] = code.innerText;
 		}
 		console.log("language changed from %s to %s", oldLang, lang);
-		code.className = "language-" + lang;
+		code.className = "language-" + exports.syntaxName(lang);
+		code.parentNode.className = "language-" + exports.syntaxName(lang);
 		code.setAttribute("data-lang", lang);
 		code.innerText = languageCodes[lang] || options.codes[lang] || "";
 		block.lang = lang;
@@ -860,6 +852,10 @@ exports.bindSelector = function(options) {
 		updateCodeBlock(code, lang);
 		clearCodeOutput(code);
 		code.blur();
+		var undoButton = block.buttons["undo"];
+		if (undoButton) {
+			undoButton.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
+		}
 	});
 }
 

@@ -11,47 +11,48 @@ showAll: true
 <label for="languages" style="margin: 0">选择语言:</label>
 <select name="languages" id="languages-selector">
   <option value="go">go</option>
-  <option value="rust">rust</option>
-  <option value="c">c</option>
-  <option value="cpp">c++</option>
-  <option value="csharp">c#</option>
-  <option value="lua">lua</option>
-  <option value="python">python</option>
-  <option value="java">java</option>
-  <option value="js">javascript</option>
-  <option value="perl">perl</option>
-  <option value="r">R</option>
-  <option value="swift">swift</option>
-  <option value="php">php</option>
-  <option value="kotlin">kotlin</option>
-  <option value="scala">scala</option>
-  <option value="groovy">groovy</option>
-  <option value="haskell">haskell</option>
-  <option value="commonlisp">commonlisp</option>
-  <option value="elixir">elixir</option>
-  <option value="fsharp">f#</option>
-  <option value="assembly">assembly</option>
-  <option value="ocaml">ocaml</option>
-  <option value="bash">bash</option>
-  <option value="typescript">typescript</option>
-  <option value="prolog">prolog</option>
-  <option value="jshell">jshell</option>
-  <option value="tcl">tcl</option>
+
   <option value="ada">ada</option>
-  <option value="d">D</option>
-  <option value="erlang">erlang</option>
-  <option value="fortran">fortran</option>
-  <option value="racket">racket</option>
-  <option value="vb">Visual Basic</option>
+  <option value="assembly">assembly</option>
+  <option value="bash">bash</option>
+  <option value="c">c</option>
   <option value="clojure">clojure</option>
   <option value="cobol">cobol</option>
-  <option value="pascal">pascal</option>
-  <option value="octave">octave</option>
-  <option value="mysql">mysql</option>
-  <option value="postgresql">postgresql</option>
-  <option value="sqlite">sqlite</option>
+  <option value="cpp">c++</option>
+  <option value="csharp">c#</option>
+  <option value="d">D</option>
+  <option value="elixir">elixir</option>
+  <option value="erlang">erlang</option>
+  <option value="fortran">fortran</option>
+  <option value="fsharp">f#</option>
+  <option value="groovy">groovy</option>
+  <option value="haskell">haskell</option>
+  <option value="java">java</option>
+  <option value="javascript">javascript</option>
+  <option value="jshell">jshell</option>
+  <option value="kotlin">kotlin</option>
+  <option value="lisp">lisp</option>
+  <option value="lua">lua</option>
   <option value="mongodb">mongodb</option>
+  <option value="mysql">mysql</option>
+  <option value="ocaml">ocaml</option>
+  <option value="octave">octave</option>
+  <option value="pascal">pascal</option>
+  <option value="perl">perl</option>
+  <option value="php">php</option>
+  <option value="postgresql">postgresql</option>
+  <option value="prolog">prolog</option>
+  <option value="python">python</option>
+  <option value="r">R</option>
+  <option value="racket">racket</option>
   <option value="redis">redis</option>
+  <option value="rust">rust</option>
+  <option value="scala">scala</option>
+  <option value="sqlite">sqlite</option>
+  <option value="swift">swift</option>
+  <option value="tcl">tcl</option>
+  <option value="typescript">typescript</option>
+  <option value="vb">Visual Basic</option>
 </select>
 </span>
 <style>
@@ -59,6 +60,10 @@ showAll: true
 </style>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+	var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+	var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+		return new bootstrap.Dropdown(dropdownToggleEl);
+	})
 	if (window.codeblock) {
 		var codes = {};
 		document.querySelectorAll('.highlight').forEach(function(h) {
@@ -180,7 +185,7 @@ main = putStrLn "hello, haskell!"
 ```
 
 ```lisp {hidden="true"}
-(print "hello, common lisp!")
+(print "hello, lisp!")
 ```
 
 ```elixir {hidden="true"}
@@ -221,7 +226,7 @@ echo "hello bash!"
 ```
 
 ```ts {hidden="true"}
-const name = "typescript";
+const name: string = "typescript";
 console.log(`hello ${name}!`);
 ```
 
@@ -340,7 +345,7 @@ SELECT * FROM Hello WHERE id = '1';
 <pre class="language-mongodb"><code class="language-mongodb" data-lang="mongodb">db.helloworld.insertMany([
   {id: 1, name: 'hello, mongodb' },
 ]);
-db.employees.find({id: 1});
+db.helloworld.find({id: 1});
 </code></pre>
 </div>
 

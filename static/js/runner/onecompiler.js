@@ -1,6 +1,6 @@
 (function() {
 /**
- * lua code runner
+ * code runner by "onecompiler"
  */
 var playground = {
 	forward: "https://code.gopherd.com/forward",
@@ -15,6 +15,51 @@ function Runner(lang) {
 }
 
 var ignoredError = 'timeout: warning: timer_create: Resource temporarily unavailable';
+
+var languagesMapping = {};
+
+languagesMapping[codeblock.languages.lisp] = "commonlisp";
+
+var modes = {};
+
+modes[codeblock.languages.assembly] = "assembly_x86";
+modes[codeblock.languages.ocaml] = "perl";
+modes[codeblock.languages.bash] = "tcl";
+modes[codeblock.languages.typescript] = "javascript";
+modes[codeblock.languages.prolog] = "javascript";
+modes[codeblock.languages.jshell] = "java";
+modes[codeblock.languages.d] = "c_cpp";
+modes[codeblock.languages.erlang] = "c_cpp";
+modes[codeblock.languages.racket] = "perl";
+modes[codeblock.languages.vb] = "vbscript";
+modes[codeblock.languages.clojure] = "lisp";
+modes[codeblock.languages.cobol] = "assembly_x86";
+modes[codeblock.languages.pascal] = "javascript";
+modes[codeblock.languages.octave] = "javascript";
+modes[codeblock.languages.mysql] = "sql";
+modes[codeblock.languages.postgresql] = "sql";
+modes[codeblock.languages.sqlite] = "sql";
+modes[codeblock.languages.mongodb] = "javascript";
+modes[codeblock.languages.redis] = "javascript";
+
+function modeName(name) {
+	name = codeblock.languageName(name);
+	return modes[name] || name;
+}
+
+function filename(lang, source) {
+	switch (lang) {
+		case codeblock.languages.erlang:
+			var mod = source.match(/^-module\(\w+\)/g);
+			if (mod && mod.length > 0) {
+				var r = /\([^\)]+\)/g;
+				var s = mod[0].match(r)[0];
+				return s.substring(1, s.length-1);
+			}
+			break;
+	}
+	return "helloworld";
+}
 
 /**
  * implements Runner.parse method
@@ -32,20 +77,6 @@ Runner.prototype.parse = function(blocks) {
 	}
 };
 
-function filename(lang, source) {
-	switch (lang) {
-		case "erlang":
-			var mod = source.match(/^-module\(\w+\)/g);
-			if (mod && mod.length > 0) {
-				var r = /\([^\)]+\)/g;
-				var s = mod[0].match(r)[0];
-				return s.substring(1, s.length-1);
-			}
-			break;
-	}
-	return "helloworld";
-}
-
 /**
  * implements Runner.run method
  */
@@ -60,20 +91,21 @@ Runner.prototype.run = function() {
         xhr.setRequestHeader("X-Forward-Host", playground.host);
         xhr.setRequestHeader("X-Forward-Origin", playground.origin);
         xhr.setRequestHeader("X-Forward-Referer", playground.run + "/");
+		var extension = codeblock.extensionName(self.lang);
 		var data = JSON.stringify({
 			active: true,
 			description: null,
-			extension: codeblock.extensionName(self.lang),
+			extension: extension,
 			languageType: "programming",
-			mode: codeblock.modeName(self.lang),
+			mode: modeName(self.lang),
 			name: toTitleCase(self.lang),
 			properties: {
 				cheatsheets: false,
 				docs: true,
-				language: self.lang,
+				language: languagesMapping[self.lang] || self.lang,
 				tutorials: false,
 				files: [{
-					name: filename(self.lang, self.source) + "." + codeblock.extensionName(self.lang),
+					name: filename(self.lang, self.source) + "." + extension,
 					content: self.source
 				}]
 			},
@@ -85,13 +117,13 @@ Runner.prototype.run = function() {
 			if (result.stdout) {
 				events.push({
 					Message: result.stdout,
-					Kind: "stdout"
+					Kind: codeblock.Stdout
 				});
 			}
 			if (result.stderr && result.stderr !== ignoredError && result.stderr !== ignoredError + "\n") {
 				events.push({
 					Message: result.stderr,
-					Kind: "stderr"
+					Kind: codeblock.Stderr
 				});
 			}
 			resolve({Events: events});
@@ -111,34 +143,34 @@ function toTitleCase(str) {
 /**
  * register Runner
  */
-codeblock.registerRunner("scala", Runner);
-codeblock.registerRunner("groovy", Runner);
-codeblock.registerRunner("haskell", Runner);
-codeblock.registerRunner("commonlisp", Runner);
-codeblock.registerRunner("elixir", Runner);
-codeblock.registerRunner("fsharp", Runner);
-codeblock.registerRunner("assembly", Runner);
-codeblock.registerRunner("ocaml", Runner);
-codeblock.registerRunner("bash", Runner);
-codeblock.registerRunner("typescript", Runner);
-codeblock.registerRunner("prolog", Runner);
-codeblock.registerRunner("jshell", Runner);
-codeblock.registerRunner("tcl", Runner);
-codeblock.registerRunner("ada", Runner);
-codeblock.registerRunner("d", Runner);
-codeblock.registerRunner("erlang", Runner);
-codeblock.registerRunner("fortran", Runner);
-codeblock.registerRunner("racket", Runner);
-codeblock.registerRunner("vb", Runner);
-codeblock.registerRunner("clojure", Runner);
-codeblock.registerRunner("cobol", Runner);
-codeblock.registerRunner("pascal", Runner);
-codeblock.registerRunner("octave", Runner);
-codeblock.registerRunner("mysql", Runner);
-codeblock.registerRunner("postgresql", Runner);
-codeblock.registerRunner("sqlite", Runner);
-codeblock.registerRunner("mongodb", Runner);
-codeblock.registerRunner("redis", Runner);
+codeblock.register(codeblock.languages.scala, Runner);
+codeblock.register(codeblock.languages.groovy, Runner);
+codeblock.register(codeblock.languages.haskell, Runner);
+codeblock.register(codeblock.languages.lisp, Runner);
+codeblock.register(codeblock.languages.elixir, Runner);
+codeblock.register(codeblock.languages.fsharp, Runner);
+codeblock.register(codeblock.languages.assembly, Runner);
+codeblock.register(codeblock.languages.ocaml, Runner);
+codeblock.register(codeblock.languages.bash, Runner);
+codeblock.register(codeblock.languages.typescript, Runner);
+codeblock.register(codeblock.languages.prolog, Runner);
+codeblock.register(codeblock.languages.jshell, Runner);
+codeblock.register(codeblock.languages.tcl, Runner);
+codeblock.register(codeblock.languages.ada, Runner);
+codeblock.register(codeblock.languages.d, Runner);
+codeblock.register(codeblock.languages.erlang, Runner);
+codeblock.register(codeblock.languages.fortran, Runner);
+codeblock.register(codeblock.languages.racket, Runner);
+codeblock.register(codeblock.languages.vb, Runner);
+codeblock.register(codeblock.languages.clojure, Runner);
+codeblock.register(codeblock.languages.cobol, Runner);
+codeblock.register(codeblock.languages.pascal, Runner);
+codeblock.register(codeblock.languages.octave, Runner);
+codeblock.register(codeblock.languages.mysql, Runner);
+codeblock.register(codeblock.languages.postgresql, Runner);
+codeblock.register(codeblock.languages.sqlite, Runner);
+codeblock.register(codeblock.languages.mongodb, Runner);
+codeblock.register(codeblock.languages.redis, Runner);
 
 })();
 

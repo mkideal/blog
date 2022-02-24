@@ -44,6 +44,25 @@
 	<script src="/js/runner/onecompiler.js"></script>
 	<script>
 		codeblock.init();
+		var oldHighlightAll = Prism.highlightAll;
+		Prism.highlightAll = function(a, b) {
+			document.querySelectorAll('code:not([data-lang=""])').forEach(function(e) {
+				var lang = e.getAttribute("data-lang");
+				if (lang) {
+					var syntaxName = codeblock.syntaxName(lang);
+					if (lang !== syntaxName) {
+						if (e.className && e.className.includes("language-" + lang)) {
+							e.className = e.className.replace("language-" + lang, "");
+						}
+						if (!e.className || !e.className.includes("language-" + syntaxName)) {
+							console.log("add syntax class", syntaxName);
+							e.className = (e.className || "") + " language-" + syntaxName;
+						}
+					}
+				}
+			});
+			oldHighlightAll(a, b);
+		}
 		$(function () {
 			$('[data-toggle="tooltip"]').tooltip({
 				trigger: "hover",
