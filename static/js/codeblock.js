@@ -459,8 +459,8 @@ function setEditMode(options, block, undoButton) {
 	var code = block.element;
 	var lastSaveTime = new Date().getTime();
 	var lastInputTime = lastSaveTime;
-	var idleInterval = 500; // 500ms
-	var maxSaveInterval = 5000; // 5s
+	var idleInterval = 2000; // 2s
+	var maxSaveInterval = 20000; // 20s
 	code.setAttribute("contenteditable", "true");
 	code.spellcheck = false;
 	code.addEventListener('keydown', function(e){
