@@ -5,10 +5,8 @@ abstract: 搜集多种编程语言的代码在线运行工具，所有代码均�
 showAll: true
 ---
 
-> go 语言默认会自动添加 `package main` 并且自动引入所需的标准库。
-
 <span>
-<label for="languages" style="margin: 0">选择语言:</label>
+<label for="languages" style="margin: 0">语&nbsp;&nbsp;言:</label>
 <select name="languages" id="languages-selector">
   <option value="go">go</option>
 
@@ -87,7 +85,7 @@ document.addEventListener('DOMContentLoaded',function(){
 })
 </script>
 
-```go {code="global-code-editor+xw" id="global-code-editor" class="line-numbers"}
+```go {code="global-code-editor+xw" id="global-code-editor" code-height="500px"}
 func main() {
 	fmt.Println("hello, go!")
 }

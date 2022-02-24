@@ -92,7 +92,7 @@ html {
 
 .code-button-container {
   position: absolute;
-  right: 0;
+  right: 1rem;
   margin: 1rem;
   display: flex;
   flex-direction: row-reverse;

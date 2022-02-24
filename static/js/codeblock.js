@@ -288,7 +288,13 @@ function addCodeButtons(options) {
 		var div = document.createElement("div");
 		div.className = options.codeButtonContainerClass;
 		var pre = code.parentNode;
-		pre.parentNode.insertBefore(div, pre);
+		var highlight = pre.parentNode;
+		highlight.insertBefore(div, pre);
+		var height = highlight.getAttribute("code-height");
+		if (height) {
+			code.style.height = height;
+			code.style.overflowY = "scroll";
+		}
 
 		if (options.enableClipboard) {
 			addCopyButton(options, div, code);
@@ -700,6 +706,9 @@ function createCodeOutput(options, code, results) {
 }
 
 function appendOutput(options, results, output, index, delayed) {
+	if (!results || !results.length) {
+		return;
+	}
 	for (var i = index; i < results.length; i++) {
 		var e = results[i];
 		if (!delayed && e.Delay > 0) {

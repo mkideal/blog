@@ -3,11 +3,10 @@
     <article>
         <header>
 			<h1 class="article-title" style="margin-bottom: 10px;"><i class="fas fa-tools" style="color: #0277BD"></i> {{.Title}}</h1>
-			<br/>
         </header>
 
         {{if .Params.abstract}}
-		<p>{{.Params.abstract}}</p>
+		<p><span>摘&nbsp;&nbsp;要: </span><span style="color: grey">{{.Params.abstract}}</span></p>
 		{{ end }}
 
         {{.Content}}
