@@ -954,7 +954,7 @@ exports.bindSelector = function(options) {
 		code.innerText = "Loading ...";
 		mongo.send(mongo.actions.findOne, {
 			collection: "share-code",
-			filter: {_id: options.shareId},
+			filter: {_id: {"$oid": options.shareId}},
 		}).then(function(res) {
 			console.log("load shared code:", res);
 			code.setAttribute("contenteditable", "true");
