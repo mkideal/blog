@@ -49,6 +49,10 @@ $y-medium: 1.0rem;
     line-height: 1.75;
 }
 
+pre code * {
+    line-height: 1.5;
+}
+
 :root {
 	--max-width: $max-width 
 }

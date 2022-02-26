@@ -457,7 +457,6 @@ function addLanguageButton(options, parentNode, code) {
 	}
 	// program with language prefix
 	program = lang + kProgramSeparator + program;
-	var runnable = modes.includes(kModeExe);
 	var block = new Block(id, lang, code);
 	codeblock.blocks[id] = block;
 	var blocks = codeblock.programs[program];
@@ -466,14 +465,14 @@ function addLanguageButton(options, parentNode, code) {
 	} else {
 		blocks.push(block);
 	}
-	if (!runnable) {
-		return;
-	}
-	block.buttons["run"] = addRunButton(options, parentNode, code, id, program);
-	if (modes.includes(kModeShare) && window.mongo) {
-		block.buttons["share"] = addShareButton(options, parentNode, block);
+	var runnable = modes.includes(kModeExe);
+	if (runnable) {
+		block.buttons["run"] = addRunButton(options, parentNode, code, id, program);
 	}
 	if (modes.includes(kModeWrite)) {
+		if (runnable && modes.includes(kModeShare) && window.mongo) {
+			block.buttons["share"] = addShareButton(options, parentNode, block);
+		}
 		var button = addUndoButton(options, parentNode, block);
 		block.buttons["undo"] = button;
 		setEditMode(options, block, button);
@@ -558,7 +557,7 @@ function setEditMode(options, block, undoButton) {
 			} else if (size > 0) {
 				block.history[size-1].cursor = getCaret(code);
 			}
-			undoButton.style.visibility = 'visible';
+			undoButton.hidden = false;
 		}
 		lastInputTime = now;
 		updateCodeBlock(code, block.lang);
@@ -644,7 +643,7 @@ function addUndoButton(options, parentNode, block) {
 		trigger: "hover",
 		delay: {show: 250, hide: 250}
 	});
-	button.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
+	button.hidden = block.history.length <= 1;
 	button.addEventListener("click", function() {
 		if (block.history.length > 1) {
 			block.history.pop();
@@ -652,7 +651,7 @@ function addUndoButton(options, parentNode, block) {
 		var last = block.history[block.history.length - 1];
 		block.element.innerText = last.source;
 		updateCodeBlock(block.element, block.lang, last.cursor);
-		button.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
+		button.hidden = block.history.length <= 1;
 		clearCodeOutput(block.element);
 	});
 	parentNode.appendChild(button);
@@ -661,6 +660,7 @@ function addUndoButton(options, parentNode, block) {
 
 function addShareButton(options, parentNode, block) {
 	var shareIcon = options.shareIcon;
+	var sharingIcon = options.sharingIcon;
 	var button = document.createElement("button");
 	button.className = options.shareButtonClass;
 	button.type = "button";
@@ -673,19 +673,22 @@ function addShareButton(options, parentNode, block) {
 		delay: {show: 250, hide: 250}
 	});
 	button.addEventListener("click", function() {
+		button.innerHTML = sharingIcon;
 		shareCode(options, {
 			lang: block.lang,
 			code: block.element.innerText,
 		}).then(function(res) {
 			console.log("share code ok");
+			button.innerHTML = shareIcon;
 			button.blur();
 			if (res.error) {
 				button.innerHTML = "Error";
 				setTimeout(function () {button.innerHTML = shareIcon}, 3000);
 				return;
 			}
-			createShareOutput(options, block.element, res.url);
+			createShareOutput(block.element, res.url);
 		}).catch(function(e) {
+			button.innerHTML = shareIcon;
 			console.log("share code error", e);
 			button.blur();
 			button.innerHTML = "Error";
@@ -724,26 +727,35 @@ function shareCode(options, obj) {
 	});
 }
 
+var alertElementId = "alert-top-fixed";
+
 /**
- * clears share output
+ * clears alert
  */
-function clearShareOutput() {
-	var child = document.getElementById('share-output');
+function clearAlert() {
+	var child = document.getElementById(alertElementId);
 	if (child) {
 		console.log("remove child", child);
 		child.parentNode.removeChild(child);
 	}
 }
 
-/**
- * creates share output
- */
-function createShareOutput(options, code, url) {
-	clearShareOutput();
+function createAlert(html, callback) {
+	clearAlert();
 	var container = document.createElement("div");
 	container.className = "alert-top-fixed";
 	document.body.appendChild(container);
-	container.id = "share-output";
+	container.id = alertElementId;
+	container.insertAdjacentHTML('beforeend', html);
+	if (callback) {
+		callback(container);
+	}
+}
+
+/**
+ * creates share result alert
+ */
+function createShareOutput(code, url) {
 	var shareHTML =
 		'<div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 0;">\n' +
 		'  <strong>已分享至: </strong><span id="share-output-url" style="cursor: pointer;" ' +
@@ -754,9 +766,9 @@ function createShareOutput(options, code, url) {
 		'    <span aria-hidden="true">&times;</span>\n' +
 		'  </button>\n' +
 		'</div>';
-	container.insertAdjacentHTML('beforeend', shareHTML);
-	var output = document.getElementById("share-output-url");
-	output.innerText = url;
+	createAlert(shareHTML, function(container) {
+		document.getElementById("share-output-url").innerText = url;
+	});
 }
 
 
@@ -904,6 +916,7 @@ exports.init = function(options) {
 	options.undoButtonClass = options.undoButtonClass || "btn btn-light btn-code btn-code-undo";
 
 	options.shareIcon = options.shareIcon || '<i class="fas fa-share"></i>';
+	options.sharingIcon = options.sharingIcon || '<i class="fas fa-circle-notch fa-spin"></i>';
 	options.shareButtonClass = options.shareButtonClass || "btn btn-light btn-code btn-code-share";
 	options.shareOutputClass = options.shareOutputClass || "code-share";
 
@@ -1009,7 +1022,7 @@ function refreshEditor(block) {
 	code.blur();
 	var undoButton = block.buttons["undo"];
 	if (undoButton) {
-		undoButton.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
+		undoButton.hidden = block.history.length <= 1;
 	}
 }
 
