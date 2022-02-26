@@ -29,6 +29,20 @@ var codeblock = {
 	highlighter: null, /* syntax highlighter */
 };
 
+window.copyInnerText = function(selector, result) {
+	var elem = document.querySelector(selector);
+	if (elem && codeblock.clipboard) {
+		codeblock.clipboard.writeText(elem.innerText).then(function() {
+			if (result) {
+				var resultElem = document.querySelector(result);
+				if (resultElem) {
+					resultElem.innerText = "已复制";
+				}
+			}
+		});
+	}
+}
+
 /**
  * languages list all predecalred language names
  */
@@ -680,8 +694,22 @@ function addShareButton(options, parentNode, block) {
 	});
 	parentNode.appendChild(button);
 }
+ 
+function fakeShareCode(options, obj) {
+	return new Promise(function(resolve, reject) {
+		resolve({
+			url: options.shareCodeURL + "?id=testId"
+		});
+	});
+}
 
 function shareCode(options, obj) {
+	//return fakeShareCode(options, obj);
+
+	if (obj.code.length > 8096) {
+		alert("代码过长，无法分享！");
+		return;
+	}
 	obj.time = new Date().getTime();
 	return new Promise(function(resolve, reject) {
 		mongo.send(mongo.actions.insertOne, {
@@ -717,8 +745,11 @@ function createShareOutput(options, code, url) {
 	document.body.appendChild(container);
 	container.id = "share-output";
 	var shareHTML =
-		'<div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 0">\n' +
-		'  <strong>Share success, URL: </strong><span id="share-output-url"></span>\n' +
+		'<div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 0;">\n' +
+		'  <strong>已分享至: </strong><span id="share-output-url" style="cursor: pointer;" ' +
+		"onclick=\"copyInnerText('#share-output-url', '#share-output-copy');\"></span> " +
+		"<button type=\"button\" class=\"btn btn-primary\" id=\"share-output-copy\" onclick=\"copyInnerText('#share-output-url', '#share-output-copy');\"" +
+		'>复制</span>\n' +
 		'  <button type="button" class="close" data-dismiss="alert" id="close-alert-top-fixed" aria-label="Close">\n' +
 		'    <span aria-hidden="true">&times;</span>\n' +
 		'  </button>\n' +
