@@ -201,3 +201,8 @@ html {
 	height: 100%;
 	padding: 0 1.25rem;
 }
+
+#content .bad-code {
+	box-shadow: 1px 1px 3px #D81B60;
+    border-color: #D81B60;
+}

@@ -3,7 +3,7 @@
  * lua code runner
  */
 var playground = {
-	forward: "https://code.gopherd.com/forward",
+	forward: document.currentScript.getAttribute("data-forward-url"),
 	host: "www.lua.org",
 	run: "https://www.lua.org/cgi-bin/demo"
 };

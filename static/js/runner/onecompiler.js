@@ -3,7 +3,7 @@
  * code runner by "onecompiler"
  */
 var playground = {
-	forward: "https://code.gopherd.com/forward",
+	forward: document.currentScript.getAttribute("data-forward-url"),
 	host: "onecompiler.com",
 	origin: "https://onecompiler.com",
 	run: "https://onecompiler.com/api/code/exec"

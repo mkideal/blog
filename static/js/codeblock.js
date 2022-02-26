@@ -432,6 +432,7 @@ function addLanguageButton(options, parentNode, code) {
 		program = attrs.substr(0, splitIndex) || program;
 		modes = attrs.substr(splitIndex + 1);
 		if (modes.includes(kModeBad)) {
+			code.className += ' bad-code';
 			return;
 		}
 	} else {
@@ -455,7 +456,7 @@ function addLanguageButton(options, parentNode, code) {
 		return;
 	}
 	block.buttons["run"] = addRunButton(options, parentNode, code, id, program);
-	if (modes.includes(kModeShare) && options.shareCodeURL) {
+	if (modes.includes(kModeShare) && window.mongo) {
 		block.buttons["share"] = addShareButton(options, parentNode, block);
 	}
 	if (modes.includes(kModeWrite)) {
@@ -681,9 +682,17 @@ function addShareButton(options, parentNode, block) {
 }
 
 function shareCode(options, obj) {
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', options.shareCodeURL);
-	return exports.sendRequest(xhr, JSON.stringify(obj));
+	return new Promise(function(resolve, reject) {
+		mongo.send(mongo.actions.insertOne, {
+			collection: "share-code",
+			document: obj
+		}).then(function(res) {
+			console.log("insert success: ", res.insertedId);
+			resolve({
+				url: options.shareCodeURL + "?id=" + res.insertedId
+			});
+		}).catch(reject);
+	});
 }
 
 /**
@@ -906,7 +915,7 @@ exports.init = function(options) {
 }
 
 exports.bindSelector = function(options) {
-	console.log('bindSelector');
+	console.log('bindSelector', options);
 	options.codes = options.codes || {};
 	var selector = document.querySelector(options.selector);
 	var highlight = document.getElementById(options.editor);
@@ -935,20 +944,39 @@ exports.bindSelector = function(options) {
 			languageCodes[oldLang] = code.innerText;
 		}
 		console.log("language changed from %s to %s", oldLang, lang);
-		code.className = "language-" + exports.syntaxName(lang);
-		code.parentNode.className = "language-" + exports.syntaxName(lang);
-		code.setAttribute("data-lang", lang);
-		code.innerText = languageCodes[lang] || options.codes[lang] || "";
 		block.lang = lang;
-		block.resetHistory();
-		updateCodeBlock(code, lang);
-		clearCodeOutput(code);
-		code.blur();
-		var undoButton = block.buttons["undo"];
-		if (undoButton) {
-			undoButton.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
-		}
+		code.innerText = languageCodes[lang] || options.codes[lang] || "";
+		refreshEditor(block, lang)
 	});
+	if (options.id) {
+		code.setAttribute("contenteditable", "false");
+		code.innerText = "Loading ...";
+		mongo.send(mongo.actions.findOne, {
+			filter: {_id: options.id},
+		}).then(function(res) {
+			console.log("load shared code:", res);
+			code.setAttribute("contenteditable", "true");
+			block.lang = res.lang;
+			block.code = res.code;
+		}).catch(function(e) {
+			code.innerText = "Load fail: " + e;
+		});
+	}
+}
+
+function refreshEditor(block) {
+	var code = block.element;
+	code.className = "language-" + exports.syntaxName(block.lang);
+	code.parentNode.className = "language-" + exports.syntaxName(block.lang);
+	code.setAttribute("data-lang", block.lang);
+	block.resetHistory();
+	updateCodeBlock(code, block.lang);
+	clearCodeOutput(code);
+	code.blur();
+	var undoButton = block.buttons["undo"];
+	if (undoButton) {
+		undoButton.style.visibility = block.history.length > 1 ? 'visible' : 'hidden';
+	}
 }
 
 window.codeblock = exports;

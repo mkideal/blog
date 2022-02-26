@@ -11,6 +11,7 @@ googleAnalytics = ""
 	description = "mkideal's Blog"
 	favicon = "favicon.ico"  # path to a .ico to use as favicon
 	logo = "/img/logo.svg"  # url or path to a logo to put in the header
+	forward = "https://code.gopherd.com/forward"
 
 	[params.style]  # appearance options (can be omitted)
 		fontFamily = "Inconsolata"
@@ -47,7 +48,12 @@ googleAnalytics = ""
 		url = "mailto:i@mkideal.com"
 
 	[params.codeblock]
-		share = "https://code.gopherd.com/share"
+		share = "https://www.mkideal.com/tools/runner"
+	[params.mongo]
+		enable = true
+		appId = "data-egkqp"
+		dataSource = "Cluster0"
+		database = "blog_mkideal_com"
 
 [permalinks]
 	"/" = "/:filename"
