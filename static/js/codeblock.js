@@ -682,6 +682,7 @@ function addShareButton(options, parentNode, block) {
 }
 
 function shareCode(options, obj) {
+	obj.time = new Date().getTime();
 	return new Promise(function(resolve, reject) {
 		mongo.send(mongo.actions.insertOne, {
 			collection: "share-code",
