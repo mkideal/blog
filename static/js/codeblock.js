@@ -958,8 +958,9 @@ exports.bindSelector = function(options) {
 		}).then(function(res) {
 			console.log("load shared code:", res);
 			code.setAttribute("contenteditable", "true");
-			block.lang = res.lang;
-			block.code = res.code;
+			block.lang = res.document.lang;
+			block.code = res.document.code;
+			refreshEditor(block);
 		}).catch(function(e) {
 			code.innerText = "Load fail: " + e;
 		});
