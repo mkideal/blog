@@ -948,11 +948,11 @@ exports.bindSelector = function(options) {
 		code.innerText = languageCodes[lang] || options.codes[lang] || "";
 		refreshEditor(block, lang)
 	});
-	if (options.id) {
+	if (options.shareId) {
 		code.setAttribute("contenteditable", "false");
 		code.innerText = "Loading ...";
 		mongo.send(mongo.actions.findOne, {
-			filter: {_id: options.id},
+			filter: {_id: options.shareId},
 		}).then(function(res) {
 			console.log("load shared code:", res);
 			code.setAttribute("contenteditable", "true");
