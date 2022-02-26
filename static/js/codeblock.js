@@ -953,6 +953,7 @@ exports.bindSelector = function(options) {
 		code.setAttribute("contenteditable", "false");
 		code.innerText = "Loading ...";
 		mongo.send(mongo.actions.findOne, {
+			collection: "share-code",
 			filter: {_id: options.shareId},
 		}).then(function(res) {
 			console.log("load shared code:", res);
