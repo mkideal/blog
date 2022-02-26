@@ -190,15 +190,24 @@ html {
 
 .alert-top-fixed {
     position:fixed;
-    top: 0px;
-    left: 0px;
     width: 100%;
     z-index:9999;
+    left: 0px;
+	top: 0px;
 }
 
 #close-alert-top-fixed {
 	height: 100%;
 	padding: 0 1.25rem;
+}
+
+@keyframes show-alert-top-fixed {
+	from {
+		top: -200px;
+	}
+	to {
+		top: 0px;
+	}
 }
 
 #content .bad-code {

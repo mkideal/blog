@@ -346,7 +346,8 @@ function addCopyButton(options, parentNode, code) {
 			},
 			function (error) {
 				button.blur();
-				button.innerHTML = "Error";
+				button.innerHTML = copyIcon;
+				createTextAlert(error, "danger");
 				setTimeout(function () {button.innerHTML = copyIcon}, 3000);
 			}
 		);
@@ -678,21 +679,20 @@ function addShareButton(options, parentNode, block) {
 			lang: block.lang,
 			code: block.element.innerText,
 		}).then(function(res) {
-			console.log("share code ok");
 			button.innerHTML = shareIcon;
 			button.blur();
 			if (res.error) {
-				button.innerHTML = "Error";
-				setTimeout(function () {button.innerHTML = shareIcon}, 3000);
+				console.log("share code error", res.error);
+				createTextAlert(error, "danger");
 				return;
 			}
-			createShareOutput(block.element, res.url);
+			console.log("share code ok");
+			createShareAlert(block.element, res.url);
 		}).catch(function(e) {
-			button.innerHTML = shareIcon;
 			console.log("share code error", e);
+			button.innerHTML = shareIcon;
 			button.blur();
-			button.innerHTML = "Error";
-			setTimeout(function () {button.innerHTML = shareIcon}, 3000);
+			createTextAlert(e, "danger");
 		});
 	});
 	parentNode.appendChild(button);
@@ -729,9 +729,6 @@ function shareCode(options, obj) {
 
 var alertElementId = "alert-top-fixed";
 
-/**
- * clears alert
- */
 function clearAlert() {
 	var child = document.getElementById(alertElementId);
 	if (child) {
@@ -740,8 +737,17 @@ function clearAlert() {
 	}
 }
 
-function createAlert(html, callback) {
+// type: primary,secondary,success,danger,warning,info,light,dark
+// @see: https://getbootstrap.com/docs/4.0/components/alerts/
+function createAlert(html, type, callback) {
 	clearAlert();
+	html = '<div class="alert alert-' + (type || "primary") + ' alert-dismissible fade show" role="alert" ' +
+		'style="border-radius: 0; animation-duration: 0.5s; animation-name: show-alert-top-fixed;">\n' +
+		html + 
+		'  <button type="button" class="close" data-dismiss="alert" id="close-alert-top-fixed" aria-label="Close">\n' +
+		'    <span aria-hidden="true">&times;</span>\n' +
+		'  </button>\n' +
+		'</div>'
 	var container = document.createElement("div");
 	container.className = "alert-top-fixed";
 	document.body.appendChild(container);
@@ -752,25 +758,26 @@ function createAlert(html, callback) {
 	}
 }
 
-/**
- * creates share result alert
- */
-function createShareOutput(code, url) {
+function createTextAlert(text, type) {
+	text = text + "";
+	var html = "<span>" + text.replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#39;") + "</span>";
+	createAlert(html, type);
+}
+
+function createShareAlert(code, url) {
 	var shareHTML =
-		'<div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 0;">\n' +
-		'  <strong>已分享至: </strong><span id="share-output-url" style="cursor: pointer;" ' +
+		'<strong>已分享至: </strong><span id="share-output-url" style="cursor: pointer;" ' +
 		"onclick=\"copyInnerText('#share-output-url', '#share-output-copy');\"></span> " +
 		"<button type=\"button\" class=\"btn btn-primary\" id=\"share-output-copy\" onclick=\"copyInnerText('#share-output-url', '#share-output-copy');\"" +
-		'>复制</span>\n' +
-		'  <button type="button" class="close" data-dismiss="alert" id="close-alert-top-fixed" aria-label="Close">\n' +
-		'    <span aria-hidden="true">&times;</span>\n' +
-		'  </button>\n' +
-		'</div>';
-	createAlert(shareHTML, function(container) {
+		'>复制</span>;'
+	createAlert(shareHTML, "success", function(container) {
 		document.getElementById("share-output-url").innerText = url;
 	});
 }
-
 
 /**
  * runProgram runs specific program
