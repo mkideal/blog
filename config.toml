@@ -46,6 +46,9 @@ googleAnalytics = ""
 		title = "E-mail"
 		url = "mailto:i@mkideal.com"
 
+	[params.codeblock]
+		share = "https://code.gopherd.com/share"
+
 [permalinks]
 	"/" = "/:filename"
 

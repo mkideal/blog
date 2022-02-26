@@ -187,3 +187,17 @@ html {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+.alert-top-fixed {
+    position:fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    z-index:9999;
+	opacity: 0.9;
+}
+
+#close-alert-top-fixed {
+	height: 100%;
+	padding: 0 1.25rem;
+}

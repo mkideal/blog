@@ -202,6 +202,7 @@ var kModeExe = "x";   // executable
 var kModeBad = "b";   // bad code and not executed
 var kModeErr = "e";   // TODO: error code but can executed
 var kModeWrite = "w"; // TODO: writable
+var kModeShare = "s"; // TODO: share code
 
 var kMaxHistories = 1000;
 
@@ -312,7 +313,7 @@ function addCopyButton(options, parentNode, code) {
 	var copyIcon = options.copyIcon;
 	var copiedIcon = options.copiedIcon;
 	var button = document.createElement("button");
-	button.className = options.codeClipboardButtonClass;
+	button.className = options.clipboardButtonClass;
 	button.type = "button";
 	button.innerHTML = copyIcon;
 	button.setAttribute("data-toggle", "tooltip");
@@ -404,7 +405,7 @@ function setCaret(element, lastPos) {
 var spaceRegexp = /\s/;
 
 /**
- * add "run" button for codeblock
+ * add run/undo/share button for codeblock
  */
 function addLanguageButton(options, parentNode, code) {
 	var lang = exports.languageName(code.getAttribute(options.langAttrName));
@@ -454,6 +455,9 @@ function addLanguageButton(options, parentNode, code) {
 		return;
 	}
 	block.buttons["run"] = addRunButton(options, parentNode, code, id, program);
+	if (modes.includes(kModeShare) && options.shareCodeURL) {
+		block.buttons["share"] = addShareButton(options, parentNode, block);
+	}
 	if (modes.includes(kModeWrite)) {
 		var button = addUndoButton(options, parentNode, block);
 		block.buttons["undo"] = button;
@@ -572,7 +576,7 @@ function addRunButton(options, parentNode, code, id, program) {
 	var runIcon = options.runIcon;
 	var runningIcon = options.runningIcon;
 	var button = document.createElement("button");
-	button.className = options.codeRunButtonClass;
+	button.className = options.runButtonClass;
 	button.type = "button";
 	button.innerHTML = runIcon;
 	button.setAttribute("data-toggle", "tooltip");
@@ -615,7 +619,7 @@ function addRunButton(options, parentNode, code, id, program) {
 function addUndoButton(options, parentNode, block) {
 	var undoIcon = options.undoIcon;
 	var button = document.createElement("button");
-	button.className = options.codeUndoButtonClass;
+	button.className = options.undoButtonClass;
 	button.type = "button";
 	button.innerHTML = undoIcon;
 	button.setAttribute("data-toggle", "tooltip");
@@ -639,6 +643,81 @@ function addUndoButton(options, parentNode, block) {
 	parentNode.appendChild(button);
 	return button;
 }
+
+function addShareButton(options, parentNode, block) {
+	var shareIcon = options.shareIcon;
+	var button = document.createElement("button");
+	button.className = options.shareButtonClass;
+	button.type = "button";
+	button.innerHTML = shareIcon;
+	button.setAttribute("data-toggle", "tooltip");
+	button.setAttribute("data-placement", "bottom");
+	button.setAttribute("title", "Share");
+	$(button).tooltip({
+		trigger: "hover",
+		delay: {show: 250, hide: 250}
+	});
+	button.addEventListener("click", function() {
+		shareCode(options, {
+			lang: block.lang,
+			code: block.element.innerText,
+		}).then(function(res) {
+			console.log("share code ok");
+			button.blur();
+			if (res.error) {
+				button.innerHTML = "Error";
+				setTimeout(function () {button.innerHTML = shareIcon}, 3000);
+				return;
+			}
+			createShareOutput(options, block.element, res.url);
+		}).catch(function(e) {
+			console.log("share code error", e);
+			button.blur();
+			button.innerHTML = "Error";
+			setTimeout(function () {button.innerHTML = shareIcon}, 3000);
+		});
+	});
+	parentNode.appendChild(button);
+}
+
+function shareCode(options, obj) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', options.shareCodeURL);
+	return exports.sendRequest(xhr, JSON.stringify(obj));
+}
+
+/**
+ * clears share output
+ */
+function clearShareOutput() {
+	var child = document.getElementById('share-output');
+	if (child) {
+		console.log("remove child", child);
+		child.parentNode.removeChild(child);
+	}
+}
+
+/**
+ * creates share output
+ */
+function createShareOutput(options, code, url) {
+	clearShareOutput();
+	var container = document.createElement("div");
+	container.className = "alert-top-fixed";
+	document.body.appendChild(container);
+	container.id = "share-output";
+	var shareHTML =
+		'<div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 0">\n' +
+		'  <strong>Share success, URL: </strong><span id="share-output-url"></span>\n' +
+		'  <button type="button" class="close" data-dismiss="alert" id="close-alert-top-fixed" aria-label="Close">\n' +
+		'    <span aria-hidden="true">&times;</span>\n' +
+		'  </button>\n' +
+		'</div>';
+	container.insertAdjacentHTML('beforeend', shareHTML);
+	var output = document.getElementById("share-output-url");
+	output.innerText = url;
+}
+
 
 /**
  * runProgram runs specific program
@@ -775,13 +854,17 @@ exports.init = function(options) {
 
 	options.copyIcon = options.copyIcon || '<i class="fas fa-copy"></i>';
 	options.copiedIcon = options.copiedIcon || '<i class="fas fa-check" style="color: #32CD32"></i>';
-	options.codeClipboardButtonClass = options.codeClipboardButtonClass || "btn btn-light btn-code btn-code-clipboard";
+	options.clipboardButtonClass = options.clipboardButtonClass || "btn btn-light btn-code btn-code-clipboard";
 
 	options.runIcon = options.runIcon || '<i class="fas fa-play"></i>';
 	options.runningIcon = options.runningIcon || '<i class="fas fa-sync fa-spin"></i>';
-	options.codeRunButtonClass = options.codeRunButtonClass || "btn btn-light btn-code btn-code-run";
+	options.runButtonClass = options.runButtonClass || "btn btn-light btn-code btn-code-run";
 	options.undoIcon = options.undoIcon || '<i class="fas fa-undo"></i>';
-	options.codeUndoButtonClass = options.codeUndoButtonClass || "btn btn-light btn-code btn-code-undo";
+	options.undoButtonClass = options.undoButtonClass || "btn btn-light btn-code btn-code-undo";
+
+	options.shareIcon = options.shareIcon || '<i class="fas fa-share"></i>';
+	options.shareButtonClass = options.shareButtonClass || "btn btn-light btn-code btn-code-share";
+	options.shareOutputClass = options.shareOutputClass || "code-share";
 
 	options.codeOutputClass = options.codeOutputClass || "code-output";
 	options.errorOutputStyle = options.errorOutputStyle || "color: red";

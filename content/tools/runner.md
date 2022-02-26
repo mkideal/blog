@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded',function(){
 })
 </script>
 
-```go {code="global-code-editor+xw" id="global-code-editor" code-height="500px"}
+```go {code="global-code-editor+xws" id="global-code-editor" code-height="500px"}
 func main() {
 	fmt.Println("hello, go!")
 }

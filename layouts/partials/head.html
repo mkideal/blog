@@ -43,7 +43,9 @@
 	<script src="/js/runner/sololearn.js"></script>
 	<script src="/js/runner/onecompiler.js"></script>
 	<script>
-		codeblock.init();
+		codeblock.init({
+			shareCodeURL: {{.Site.Params.codeblock.share}}
+		});
 		var oldHighlightAll = Prism.highlightAll;
 		Prism.highlightAll = function(a, b) {
 			document.querySelectorAll('code:not([data-lang=""])').forEach(function(e) {
