@@ -419,13 +419,26 @@ function setCaret(element, lastPos) {
 	element.focus();
 };
 
+function scrollSelectionIntoView() {
+	var selection = window.getSelection();
+	if (!selection.rangeCount) {
+		return;
+	}
+	var firstRange = selection.getRangeAt(0);
+	if (firstRange.commonAncestorContainer === document) {
+		return;
+	}
+
+	var tempAnchorEl = document.createElement('br');
+	firstRange.insertNode(tempAnchorEl);
+	tempAnchorEl.scrollIntoViewIfNeeded(false);
+	tempAnchorEl.remove();
+};
+
 var spaceRegexp = /\s/;
 
 function isHidden(elem) {
-	if (elem.offsetParent == null) {
-		return true;
-	}
-	return false;
+	return elem.offsetParent == null;
 }
 
 /**
@@ -666,6 +679,7 @@ function updateCodeBlock(block, cursor) {
 		}
 	}
 	syncLineNumbers(block);
+	scrollSelectionIntoView();
 }
 
 function addRunButton(options, parentNode, block) {
