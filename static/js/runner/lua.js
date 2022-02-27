@@ -13,6 +13,10 @@ function Runner(lang) {
 	this.source = null;
 }
 
+Runner.prototype.provider = function() {
+	return {name: playground.host, link: playground.run};
+};
+
 /**
  * implements Runner.parse method
  */

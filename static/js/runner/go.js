@@ -2,11 +2,11 @@
 /**
  * go code runner
  */
-var rootURL = "https://gotipplay.golang.org";
+var host =  "gotipplay.golang.org";
 
 var playground = {
-	run: rootURL + '/compile',
-	format: rootURL + '/fmt',
+	run: 'https://' + host + '/compile',
+	format: 'https://' + host + '/fmt',
 	version: 2,
 	withVet: true
 };
@@ -15,6 +15,10 @@ function Runner(lang) {
 	this.lang = lang;
 	this.source = null;
 }
+
+Runner.prototype.provider = function() {
+	return {name: host, link: 'https://' + host};
+};
 
 /**
  * implements Runner.parse method

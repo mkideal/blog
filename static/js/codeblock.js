@@ -242,6 +242,9 @@ function Block(id, lang, program, modes, code) {
 	this.code = code;
 	this.resetHistory();
 	this.buttons = {};
+
+	this.highlighted = false;
+	this.version = 0;
 }
 
 Block.prototype.resetHistory = function() {
@@ -254,6 +257,10 @@ Block.prototype.resetHistory = function() {
 Object.defineProperty(Block.prototype, "source", {
 	get: function() {
 		return this.code.innerText;
+	},
+	set: function(value) {
+		this.code.innerText = value;
+		this.version++;
 	}
 });
 
@@ -577,7 +584,7 @@ function syncLineNumbers(block) {
 	var numbers = code.parentNode.parentNode.parentNode.querySelector(".codeblock-left > pre > code");
 	numbers.style.height = block.code.offsetHeight + "px";
 	var lines = 0;
-	var source = code.innerText;
+	var source = block.source;
 	var lineend = "\n";
 	var lastIndex = -1;
 	if (source) {
@@ -623,22 +630,23 @@ function setEditMode(options, block, undoButton) {
 		} else if (e.keyCode == 13/*enter*/) {
 			e.preventDefault();
 			var prefix;
-			if (code.innerText) {
+			var source = block.source;
+			if (source) {
 				var cursor = getCaret(code);
-				var lastLineIndex = code.innerText.substr(0, cursor).lastIndexOf("\n");
+				var lastLineIndex = source.substr(0, cursor).lastIndexOf("\n");
 				var isEmptyLine = true;
 				var lineStart = lastLineIndex + 1;
 				for (var i = lineStart; i < cursor; i++) {
-					if (!spaceRegexp.test(code.innerText.charAt(i))) {
+					if (!spaceRegexp.test(source.charAt(i))) {
 						isEmptyLine = false;
 						if (i > lineStart) {
-							prefix = code.innerText.substr(lineStart, i - lineStart);
+							prefix = source.substr(lineStart, i - lineStart);
 						}
 						break;
 					}
 				}
 				if (isEmptyLine && cursor > lineStart) {
-					prefix = code.innerText.substr(lineStart, cursor - lineStart);
+					prefix = source.substr(lineStart, cursor - lineStart);
 				}
 				if (isEmptyLine && lineStart < cursor) {
 					// remove current empty line but line endings
@@ -667,7 +675,7 @@ function setEditMode(options, block, undoButton) {
 		if (now > lastSaveTime + maxSaveInterval || now > lastInputTime + idleInterval) {
 			lastSaveTime = now;
 			var size = block.history.length;
-			var source = code.innerText;
+			var source = block.source;
 			if (size === 0 || block.history[size-1].source !== source) {
 				var last = block.history[size-1];
 				block.history.push({
@@ -705,18 +713,39 @@ function setEditMode(options, block, undoButton) {
 	});
 }
 
+function highlightBlock(grammer, block, cursor, source) {
+	var res = codeblock.highlighter.highlight(source || block.source, grammer, block.lang);
+	if (cursor == undefined || cursor == null) {
+		cursor = getCaret(block.code);
+	}
+	block.code.innerHTML = res;
+	block.highlighted = true;
+	console.log("highlightBlock:", res);
+	setCaret(block.code, cursor);
+}
+
 function updateCodeBlock(block, cursor) {
 	var code = block.code;
 	var lang = block.lang;
 	if (codeblock.highlighter) {
 		var grammer = codeblock.highlighter.languages[exports.syntaxName(lang)];
+		block.highlighted = false;
 		if (grammer) {
-			var res = codeblock.highlighter.highlight(code.innerText, grammer, lang);
-			if (cursor == undefined || cursor == null) {
-				cursor = getCaret(code);
+			highlightBlock(grammer, block, cursor);
+		} else {
+			var source = block.source;
+			var version = block.version;
+			function tryHighlight() {
+				if (!block.highlighted && block.version === version) {
+					requestAnimationFrame(tryHighlight);
+					var grammer = codeblock.highlighter.languages[exports.syntaxName(block.lang)];
+					console.log("tryHighlight:", JSON.stringify(source), block.lang, !!grammer);
+					if (grammer) {
+						highlightBlock(grammer, block, cursor, source);
+					}
+				}
 			}
-			code.innerHTML = res;
-			setCaret(code, cursor);
+			requestAnimationFrame(tryHighlight);
 		}
 	}
 	syncLineNumbers(block);
@@ -787,7 +816,7 @@ function addUndoButton(options, parentNode, block) {
 			block.history.pop();
 		}
 		var last = block.history[block.history.length - 1];
-		block.code.innerText = last.source;
+		block.source = last.source;
 		updateCodeBlock(block, last.cursor);
 		button.hidden = block.history.length <= 1;
 		clearCodeOutput(block);
@@ -814,7 +843,7 @@ function addShareButton(options, parentNode, block) {
 		button.innerHTML = sharingIcon;
 		shareCode(options, {
 			lang: block.lang,
-			code: block.code.innerText,
+			code: block.source,
 		}).then(function(res) {
 			button.innerHTML = shareIcon;
 			button.blur();
@@ -981,9 +1010,6 @@ function createCodeOutput(options, block, results) {
 	child.setAttribute("for-output", block.code.id);
 	var output = document.createElement("code");
 	child.appendChild(output);
-	if (options.outputPrefix && typeof options.outputPrefix === 'string') {
-		output.insertAdjacentHTML('beforeend', options.outputPrefix);
-	}
 	if (block.modes.includes(kModeNoNumber)) {
 		block.code.parentNode.after(child);
 	} else {
@@ -1081,10 +1107,6 @@ exports.init = function(options) {
 	options.shareOutputClass = options.shareOutputClass || "code-share";
 
 	options.errorOutputStyle = options.errorOutputStyle || "color: red";
-	options.outputPrefix = getDefaultValue(options.outputPrefix, true);
-	if (options.outputPrefix && typeof options.outputPrefix !== 'string') {
-		options.outputPrefix = '<span style="color:grey">Output:\n</span>'
-	}
 
 	if (options.enableClipboard && !options.clipboard) {
 		options.clipboard = navigator && navigator.clipboard ? navigator.clipboard : null;
@@ -1141,20 +1163,21 @@ exports.bindSelector = function(options) {
 	selector.addEventListener("change", function(e) {
 		var oldLang = code.getAttribute("data-lang");
 		var lang = exports.languageName(e.target.value);
-		if (oldLang === lang) {
-			return;
-		}
+		var source = block.source;
 		if (oldLang) {
-			languageCodes[oldLang] = code.innerText;
+			languageCodes[oldLang] = source;
 		}
 		console.log("language changed from %s to %s", oldLang, lang);
 		block.lang = lang;
-		code.innerText = languageCodes[lang] || options.codes[lang] || "";
-		refreshEditor(block, lang)
+		block.source = languageCodes[lang] || options.codes[lang] || "";
+		refreshEditor(block)
+		if (options.recorder) {
+			options.recorder(lang);
+		}
 	});
 	if (options.shareId) {
 		code.setAttribute("contenteditable", "false");
-		code.innerText = "Loading ...";
+		block.source = "Loading ...";
 		mongo.send(mongo.actions.findOne, {
 			collection: "share-code",
 			filter: {_id: {"$oid": options.shareId}},
@@ -1162,12 +1185,15 @@ exports.bindSelector = function(options) {
 			console.log("load shared code:", res);
 			code.setAttribute("contenteditable", "true");
 			block.lang = res.document.lang;
-			block.code.innerText = res.document.code;
+			block.source = res.document.code;
 			refreshEditor(block);
 		}).catch(function(e) {
-			code.innerText = "Load fail: " + e;
+			block.source = "Load fail: " + e;
 			code.setAttribute("contenteditable", "true");
 		});
+	} else if (options.lang) {
+		selector.value = options.lang;
+		selector.dispatchEvent(new Event('change'));
 	}
 }
 
@@ -1189,6 +1215,18 @@ function refreshEditor(block) {
 	var undoButton = block.buttons["undo"];
 	if (undoButton) {
 		undoButton.hidden = block.history.length <= 1;
+	}
+	var Runner = codeblock.runners[block.lang];
+	if (Runner) {
+		var runner = new Runner(block.lang);
+		var provider = runner.provider();
+		if (provider) {
+			var backend = document.getElementById("code-backend");
+			if (backend) {
+				backend.setAttribute("href", provider.link);
+				backend.innerText = provider.name;
+			}
+		}
 	}
 }
 

@@ -11,6 +11,10 @@ function Runner(lang) {
 	this.source = null;
 }
 
+Runner.prototype.provider = function() {
+	return {name: 'sololearn.com', link: 'https://www.sololearn.com'};
+};
+
 var languagesMapping = {};
 
 languagesMapping[codeblock.languages.python] = "py";
@@ -93,16 +97,16 @@ Runner.prototype.run = function() {
 /**
  * register Runner
  */
-codeblock.register(codeblock.languages.c, Runner);
-codeblock.register(codeblock.languages.cpp, Runner);
-codeblock.register(codeblock.languages.csharp, Runner);
-codeblock.register(codeblock.languages.java, Runner);
-codeblock.register(codeblock.languages.swift, Runner);
-codeblock.register(codeblock.languages.r, Runner);
-codeblock.register(codeblock.languages.python, Runner);
-codeblock.register(codeblock.languages.javascript, Runner);
-codeblock.register(codeblock.languages.perl, Runner);
-codeblock.register(codeblock.languages.php, Runner);
-codeblock.register(codeblock.languages.kotlin, Runner);
+//codeblock.register(codeblock.languages.c, Runner);
+//codeblock.register(codeblock.languages.cpp, Runner);
+//codeblock.register(codeblock.languages.csharp, Runner);
+//codeblock.register(codeblock.languages.java, Runner);
+//codeblock.register(codeblock.languages.swift, Runner);
+//codeblock.register(codeblock.languages.r, Runner);
+//codeblock.register(codeblock.languages.python, Runner);
+//codeblock.register(codeblock.languages.javascript, Runner);
+//codeblock.register(codeblock.languages.perl, Runner);
+//codeblock.register(codeblock.languages.php, Runner);
+//codeblock.register(codeblock.languages.kotlin, Runner);
 
 })();

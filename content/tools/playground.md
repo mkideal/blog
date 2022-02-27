@@ -1,15 +1,12 @@
 ---
-title: "代码在线运行"
+title: "Playground"
 date: 2022-02-08
 abstract: 支持40余种语言的代码在线运行环境。
-showAll: true
+hideHeader: true
 ---
 
 <span>
-<label for="languages" style="margin: 0">语&nbsp;&nbsp;言:</label>
 <select name="languages" id="languages-selector">
-  <option value="go">go</option>
-
   <option value="ada">ada</option>
   <option value="assembly">assembly</option>
   <option value="bash">bash</option>
@@ -23,6 +20,7 @@ showAll: true
   <option value="erlang">erlang</option>
   <option value="fortran">fortran</option>
   <option value="fsharp">f#</option>
+  <option value="go">go</option>
   <option value="groovy">groovy</option>
   <option value="haskell">haskell</option>
   <option value="java">java</option>
@@ -50,9 +48,10 @@ showAll: true
   <option value="swift">swift</option>
   <option value="tcl">tcl</option>
   <option value="typescript">typescript</option>
-  <option value="vb">Visual Basic</option>
+  <option value="vb">vb</option>
 </select>
 </span>
+<span>by <a id="code-backend" href="#" target="_blank">#</a></span>
 <style>
 
 </style>
@@ -83,10 +82,27 @@ document.addEventListener('DOMContentLoaded',function(){
 			if (!results[2]) return '';
 			return decodeURIComponent(results[2].replace(/\+/g, ' '));
 		}
+		var localLanguageNameKey = "codeblock.lastLanguageName";
+		function getLocalLang() {
+			try {
+				return localStorage.getItem(localLanguageNameKey);
+			} catch (e) {
+				return null;
+			}
+		}
 		codeblock.bindSelector({
 			shareId: getParameterByName("id"),
 			selector: "#languages-selector",
 			editor: "global-code-editor",
+			lang: getLocalLang(),
+			recorder: function(lang) {
+				console.log("set recorder", lang);
+				try {
+					return localStorage.setItem(localLanguageNameKey, lang);
+				} catch (e) {
+					return null;
+				}
+			},
 			codes: codes
 		});
 	} else {
@@ -95,10 +111,12 @@ document.addEventListener('DOMContentLoaded',function(){
 })
 </script>
 
-```go {code="global-code-editor+xws" id="global-code-editor" code-height="350px,500px"}
-func main() {
-	fmt.Println("hello, go!")
-}
+```ada {code="global-code-editor+xws" id="global-code-editor" code-height="350px,500px"}
+with Ada.Text_IO; use Ada.Text_IO;
+procedure Hello is
+begin
+	Put_Line ("hello, ada!");
+end Hello;
 ```
 
 ```rust {hidden="true"}
@@ -181,6 +199,12 @@ object Main {
 	def main(args: Array[String]): Unit = {
 		println("hello, scala!")
 	}
+}
+```
+
+```go {hidden="true"}
+func main() {
+	fmt.Println("hello, go!")
 }
 ```
 

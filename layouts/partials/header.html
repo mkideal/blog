@@ -1,3 +1,4 @@
+{{if not .Params.hideHeader}}
 <div class="container mt-5" style="margin-top:1rem!important">
     <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
         <a class="navbar-brand mx-0 mr-sm-auto" href="{{ .Site.BaseURL }}" title="{{ .Site.Title }}">
@@ -22,3 +23,4 @@
     </nav>
 </div>
 <hr>
+{{end}}

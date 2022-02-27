@@ -49,18 +49,23 @@ googleAnalytics = ""
 
 	[params.codeblock]
 		share = "https://www.mkideal.com/tools/runner"
+
 	[params.mongo]
 		enable = true
 		appId = "data-egkqp"
 		dataSource = "Cluster0"
 		database = "blog_mkideal_com"
 
+	[params.googleAnalytics]
+		enable = true
+		appId = "UA-77412491-1"
+
 [permalinks]
 	"/" = "/:filename"
 
 [menu]
 	[[menu.main]]
-		name = "首页"
+		name = "主页"
 		url = "/"
 		weight = 1
 
@@ -69,10 +74,10 @@ googleAnalytics = ""
 		url = "/tools"
 		weight = 2
 
-	[[menu.main]]
-		name = "关于"
-		url = "/about"
-		weight = 99
+#[[menu.main]]
+#	name = "关于"
+#	url = "/about"
+#	weight = 99
 
 [markup]
 	[markup.goldmark.renderer]

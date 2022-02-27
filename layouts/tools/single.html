@@ -1,24 +1,21 @@
 {{ define "main" }}
 <div class="container">
     <article>
+        {{if not .Params.hideTitle}}
         <header>
-			<h1 class="article-title" style="margin-bottom: 10px;"><i class="fas fa-tools" style="color: #0277BD"></i> {{.Title}}</h1>
+			<h1 class="article-title" style="margin-bottom: 10px;">{{if .Params.hideHeader}}<a href="{{.Site.BaseURL}}">/</a> {{end}}{{.Title}}</h1>
         </header>
+		{{ end }}
 
+        {{if .Params.showAbstact}}
         {{if .Params.abstract}}
 		<p><span>摘&nbsp;&nbsp;要: </span><span style="color: grey">{{.Params.abstract}}</span></p>
+		{{ end }}
 		{{ end }}
 
         {{.Content}}
         <br />
     </article>
 </div>
-
-{{ if .Site.Params.utteranc.enable }}
-<hr />
-<script src="https://utteranc.es/client.js" repo="{{ .Site.Params.utteranc.repo }}" issue-term="pathname"
-    theme="github-light" crossorigin="anonymous" async>
-    </script>
-{{ end }}
 
 {{ end }}

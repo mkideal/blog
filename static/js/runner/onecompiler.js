@@ -14,6 +14,10 @@ function Runner(lang) {
 	this.source = null;
 }
 
+Runner.prototype.provider = function() {
+	return {name: playground.host, link: playground.origin + "/" + this.lang};
+}
+
 var ignoredError = 'timeout: warning: timer_create: Resource temporarily unavailable';
 
 var languagesMapping = {};
@@ -171,6 +175,18 @@ codeblock.register(codeblock.languages.postgresql, Runner);
 codeblock.register(codeblock.languages.sqlite, Runner);
 codeblock.register(codeblock.languages.mongodb, Runner);
 codeblock.register(codeblock.languages.redis, Runner);
+
+codeblock.register(codeblock.languages.c, Runner);
+codeblock.register(codeblock.languages.cpp, Runner);
+codeblock.register(codeblock.languages.csharp, Runner);
+codeblock.register(codeblock.languages.java, Runner);
+codeblock.register(codeblock.languages.swift, Runner);
+codeblock.register(codeblock.languages.r, Runner);
+codeblock.register(codeblock.languages.python, Runner);
+codeblock.register(codeblock.languages.javascript, Runner);
+codeblock.register(codeblock.languages.perl, Runner);
+codeblock.register(codeblock.languages.php, Runner);
+codeblock.register(codeblock.languages.kotlin, Runner);
 
 })();
 

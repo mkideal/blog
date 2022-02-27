@@ -15,6 +15,10 @@ function Runner(lang) {
 	this.source = null;
 }
 
+Runner.prototype.provider = function() {
+	return {name: 'play.rust-lang.org', link: 'https://play.rust-lang.org'};
+};
+
 /**
  * implements Runner.parse method
  */
