@@ -1,7 +1,7 @@
 ---
 title: "代码在线运行"
 date: 2022-02-08
-abstract: 支持40余种语言的代码在线运行工具。
+abstract: 支持40余种语言的代码在线运行环境。
 showAll: true
 ---
 
