@@ -1167,6 +1167,7 @@ function refreshEditor(block) {
 	block.resetHistory();
 	updateCodeBlock(block);
 	clearCodeOutput(block);
+	code.focus();
 	code.blur();
 	var undoButton = block.buttons["undo"];
 	if (undoButton) {
