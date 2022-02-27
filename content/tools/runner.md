@@ -1,7 +1,7 @@
 ---
 title: "代码在线运行"
 date: 2022-02-08
-abstract: 搜集多种编程语言的代码在线运行工具，所有代码均可编辑和运行。
+abstract: 支持40余种语言的代码在线运行工具。
 showAll: true
 ---
 
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded',function(){
 })
 </script>
 
-```go {code="global-code-editor+xws" id="global-code-editor" code-height="500px"}
+```go {code="global-code-editor+xws" id="global-code-editor" code-height="350px,500px"}
 func main() {
 	fmt.Println("hello, go!")
 }

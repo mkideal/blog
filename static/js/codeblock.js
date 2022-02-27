@@ -184,6 +184,10 @@ function guid() {
 	});
 };
 
+function isMobile() {
+	return (navigator && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+}
+
 // code examples
 //
 // For html:
@@ -310,7 +314,15 @@ function addCodeButtons(options) {
 		pre.insertBefore(div, code);
 		var height = highlight.getAttribute("code-height");
 		if (height) {
-			code.style.height = height;
+			var comma = height.indexOf(",");
+			if (comma >= 0) {
+				var forMobile = height.substr(0, comma);
+				var forDesktop = height.substr(comma + 1);
+				height = isMobile() ? forMobile : forDesktop;
+			}
+			if (height) {
+				code.style.height = height;
+			}
 		}
 
 		if (options.enableClipboard) {
