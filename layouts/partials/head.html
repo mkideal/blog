@@ -25,6 +25,9 @@
     {{ end -}}
 
     {{ if not .Site.IsServer }}
+    {{ if .Site.Params.googleAdSense.enable }}
+	<script data-ad-client="{{.Site.Params.googleAdSense.appId}}" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	{{ end }}
 	<!-- Global site tag (gtag.js) - Google Analytics -->
     {{ if .Site.Params.googleAnalytics.enable }}
 	<script async src="https://www.googletagmanager.com/gtag/js?id={{.Site.Params.googleAnalytics.appId}}"></script>

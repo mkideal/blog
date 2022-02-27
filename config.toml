@@ -60,6 +60,10 @@ googleAnalytics = ""
 		enable = true
 		appId = "UA-77412491-1"
 
+	[params.googleAdSense]
+		enable = true
+		appId = "ca-pub-4848513853142926"
+
 [permalinks]
 	"/" = "/:filename"
 
