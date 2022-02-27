@@ -401,12 +401,10 @@ function lookupCursor(element, lastPos, target) {
 }
 
 function setCaret(element, lastPos) {
-	var curNode=0;
 	var range = document.createRange();
 	var sel = window.getSelection();
 
 	if (element.childNodes.length > 0) {
-		var node = element;
 		var target = {node: undefined, offset: 0};
 		lookupCursor(element, lastPos, target);
 		if (target.node) {
@@ -418,6 +416,32 @@ function setCaret(element, lastPos) {
 	}
 	element.focus();
 };
+
+function selectRange(element, begin, end) {
+	var range = document.createRange();
+	var sel = window.getSelection();
+	if (element.childNodes.length > 0) {
+		var beginTarget = {node: undefined, offset: 0};
+		lookupCursor(element, begin, beginTarget);
+		if (!beginTarget.node) {
+			return false;
+		}
+		range.setStart(beginTarget.node, beginTarget.offset);
+
+		var endTarget = {node: undefined, offset: 0};
+		lookupCursor(element, end, endTarget);
+		if (!endTarget.node) {
+			return false;
+		}
+		range.setEnd(endTarget.node, endTarget.offset);
+
+		sel.removeAllRanges();
+		sel.addRange(range);
+		element.focus();
+		return true;
+	}
+	return false;
+}
 
 function scrollSelectionIntoView() {
 	var selection = window.getSelection();
@@ -606,9 +630,14 @@ function setEditMode(options, block, undoButton) {
 				}
 				if (isEmptyLine && lineStart < cursor) {
 					// remove current empty line but line endings
-					setCaret(code, lineStart);
-					for (var i = lineStart; i < cursor; i++) {
-						document.execCommand('forwardDelete', false);
+					if (selectRange(code, lineStart, cursor)) {
+						document.execCommand('delete', null, false);
+						setCaret(code, lineStart);
+					} else {
+						setCaret(code, lineStart);
+						for (var i = lineStart; i < cursor; i++) {
+							document.execCommand('forwardDelete', false);
+						}
 					}
 				}
 			}
