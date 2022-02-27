@@ -15,7 +15,6 @@ googleAnalytics = ""
 
 	[params.style]  # appearance options (can be omitted)
 		fontFamily = "Inconsolata"
-		codeFontFamily = "Inconsolata"
 		pageWidth = "900px"
 		avatarSize = "90px"
 		colorBlack = "#222222"

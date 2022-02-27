@@ -8,7 +8,6 @@ $red: {{ .Param "style.colorRed" | default "#dc3545" }};
 
 // Font
 $font-family: {{ .Param "style.fontFamily" | default "Inconsolata" }};
-$code-font-family: {{ .Param "style.codeFontFamily" | default "Inconsolata" }};
 
 // Margins
 $y-small: 0.6rem;
@@ -179,8 +178,8 @@ pre code * {
             padding: 8px 8px;
         }
     }
-	code[class*=language-], pre[class*=language-] * {
-		font-family: $code-font-family;
+	code[class*=language-], pre[class*=language-] {
+		font-family: $font-family;
 	}
 }
 #footer {
