@@ -1167,7 +1167,12 @@ function refreshEditor(block) {
 	block.resetHistory();
 	updateCodeBlock(block);
 	clearCodeOutput(block);
+
+	// @begin: strange code for fixing ``code'' element offsetTop bug on safari
+	code.parentNode.focus();
 	code.focus();
+	// @end
+
 	code.blur();
 	var undoButton = block.buttons["undo"];
 	if (undoButton) {
