@@ -60,7 +60,7 @@ go1.18beta2 download
 
 仍以求和函数为例，泛型版本的写法如下：
 
-```go {code="sum" hl_lines=[5]}
+```go {code="sum"}
 import (
 	"golang.org/x/exp/constraints"
 )
@@ -105,7 +105,7 @@ func main() {
 
 这个版本仍有一些问题，比如可以做加法的不止整数啊，还有浮点数，甚至是复数。修改类型参数 `T` 的约束来支持浮点数和复数：
 
-```go {code="sum2+x" hl_lines=[5]}
+```go {code="sum2+x"}
 import (
 	"golang.org/x/exp/constraints"
 )
@@ -174,7 +174,7 @@ func main() {
 
 可以再实现一个延迟函数调用的版本 `OrNew` 处理这种情况：
 
-```go {code="$+x" hl_lines=["9-15",20]}
+```go {code="$+x"}
 func Or[T comparable](a, b T) T {
 	var zero T
 	if a == zero {
@@ -349,7 +349,7 @@ type Event[T comparable] interface {
 
 然后定一个事件处理接口 `Listener`，同时为了使用方便实现一个内置的 listener
 
-```go {hl_lines=["8-10"]}
+```go
 // Listener 接口用于处理被触发的事件
 type Listener[T comparable] interface {
 	EventType() T

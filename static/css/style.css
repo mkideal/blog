@@ -93,7 +93,7 @@ html {
 .code-button-container {
   position: absolute;
   right: 1rem;
-  margin: 1rem;
+  margin: 0.5rem 1rem;
   display: flex;
   flex-direction: row-reverse;
 }
@@ -213,4 +213,120 @@ html {
 #content .bad-code {
 	box-shadow: 1px 1px 3px #D81B60;
     border-color: #D81B60;
+}
+
+#content .codeblock-container {
+	display: flex;
+	margin: 1rem auto;
+	flex-direction: column;
+}
+
+#content .codeblock-source {
+	display: flex;
+	margin: 0;
+	width: 100%;
+}
+
+#content .codeblock-left {
+	width: 3.7rem;
+	padding: 0;
+	margin: 0 -1px 0 0;
+	flex-shrink: 0;
+}
+
+#content .codeblock-left pre {
+	padding: 0;
+	margin: 0;
+	line-height: 0;
+}
+
+#content .codeblock-left pre code {
+	border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+	box-shadow: none;
+	padding-left: 10px;
+    padding-right: 10px;
+    text-align: right;
+    color: grey;
+	overflow: hidden;
+}
+
+#content .has-output pre code  {
+    border-bottom-left-radius: 0px;
+}
+
+#content .codeblock-right {
+	padding: 0;
+	margin: 0;
+	width: 0;
+	flex-shrink: 0;
+	flex: auto;
+}
+
+#content .codeblock-right pre {
+	padding: 0px;
+	margin: 0;
+	overflow: unset;
+	line-height: 0;
+}
+
+#content .codeblock-right  pre code {
+	border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+	box-shadow: none;
+	overflow-y: overlay;
+}
+
+#content .has-output pre code  {
+    border-bottom-right-radius: 0px;
+}
+
+#content .codeblock-output {
+	margin: 0;
+	margin-top: -1px;
+	width: 100%;
+}
+
+#content .codeblock-output code {
+	box-shadow: none;
+	border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+::-webkit-scrollbar {
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 8px;
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: #d8d8d8;
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar:vertical {
+  border-left: 1px solid #d8d8d8;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+::-webkit-scrollbar-thumb:vertical {
+  border-left: 4px solid transparent;
+}
+::-webkit-scrollbar:horizontal {
+  border-top: 1px solid #d8d8d8;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+::-webkit-scrollbar-thumb:horizontal {
+  border-top: 4px solid transparent;
+}
+::-webkit-scrollbar-corner {
+  border-left: 1px solid #d8d8d8;
+  border-top: 1px solid #d8d8d8;
+  background: transparent;
+}
+::-webkit-scrollbar-track-piece
+{
+   display: none;
 }

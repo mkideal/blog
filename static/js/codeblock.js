@@ -216,7 +216,8 @@ var kModeExe = "x";   // executable
 var kModeBad = "b";   // bad code and not executed
 var kModeErr = "e";   // TODO: error code but can executed
 var kModeWrite = "w"; // TODO: writable
-var kModeShare = "s"; // TODO: share code
+var kModeShare = "s"; // share code
+var kModeNoNumber = "n"; // no line number
 
 var kMaxHistories = 1000;
 
@@ -229,10 +230,12 @@ exports.Stderr = "stderr";
 /**
  * Block represents a code block
  */
-function Block(id, lang, element) {
+function Block(id, lang, program, modes, code) {
 	this.id = id;
 	this.lang = lang;
-	this.element = element;
+	this.program = program;
+	this.modes = modes;
+	this.code = code;
 	this.resetHistory();
 	this.buttons = {};
 }
@@ -246,7 +249,7 @@ Block.prototype.resetHistory = function() {
 
 Object.defineProperty(Block.prototype, "source", {
 	get: function() {
-		return this.element.innerText;
+		return this.code.innerText;
 	}
 });
 
@@ -303,12 +306,11 @@ function addCodeButtons(options) {
 		var div = document.createElement("div");
 		div.className = options.codeButtonContainerClass;
 		var pre = code.parentNode;
-		var highlight = pre.parentNode;
-		highlight.insertBefore(div, pre);
+        var highlight = pre.parentNode;
+		pre.insertBefore(div, code);
 		var height = highlight.getAttribute("code-height");
 		if (height) {
 			code.style.height = height;
-			code.style.overflowY = "scroll";
 		}
 
 		if (options.enableClipboard) {
@@ -419,14 +421,22 @@ function setCaret(element, lastPos) {
 
 var spaceRegexp = /\s/;
 
+function isHidden(elem) {
+	if (elem.offsetParent == null) {
+		return true;
+	}
+	return false;
+}
+
 /**
  * add run/undo/share button for codeblock
  */
 function addLanguageButton(options, parentNode, code) {
-	var lang = exports.languageName(code.getAttribute(options.langAttrName));
-	if (!lang || !codeblock.runners[lang]) {
+	if (isHidden(code)) {
 		return;
 	}
+	var lang = exports.languageName(code.getAttribute(options.langAttrName));
+	var hasRunner = lang && codeblock.runners[lang];
 	var id = code.id;
 	if (!id) {
 		id = guid();
@@ -436,11 +446,10 @@ function addLanguageButton(options, parentNode, code) {
 
 	// parse "code" attributes: [programName][+xbew] | "-" | ""
 	var attrs = highlight.getAttribute(options.codeAttrName) || "";
-	if (attrs === kIgnoredProgram) {
-		return;
-	}
+	var isIgnored = attrs === kIgnoredProgram;
 	var program = kDefaultProgram;
 	var modes = "";
+	var isBad = false;
 	var splitIndex = attrs.indexOf(kProgramSeparator);
 	if (splitIndex >= 0) {
 		// program+modes
@@ -448,27 +457,30 @@ function addLanguageButton(options, parentNode, code) {
 		modes = attrs.substr(splitIndex + 1);
 		if (modes.includes(kModeBad)) {
 			code.className += ' bad-code';
-			return;
+			isBad = true;
 		}
 	} else {
 		program = attrs || program;
 	}
-	if (program === kAutoProgram) {
+	if (program === kAutoProgram || isBad) {
 		program = guid().replace(/-/g, "");
 	}
 	// program with language prefix
 	program = lang + kProgramSeparator + program;
-	var block = new Block(id, lang, code);
-	codeblock.blocks[id] = block;
-	var blocks = codeblock.programs[program];
-	if (!blocks) {
-		codeblock.programs[program] = [block];
-	} else {
-		blocks.push(block);
+	var block = new Block(id, lang, program, modes, code);
+	if (hasRunner && !isIgnored && !isBad) {
+		codeblock.blocks[id] = block;
+		var blocks = codeblock.programs[program];
+		if (!blocks) {
+			codeblock.programs[program] = [block];
+		} else {
+			blocks.push(block);
+		}
 	}
-	var runnable = modes.includes(kModeExe);
+	console.log("isIgnored", isIgnored, ", hasRunner", hasRunner);
+	var runnable = !isIgnored && hasRunner && modes.includes(kModeExe);
 	if (runnable) {
-		block.buttons["run"] = addRunButton(options, parentNode, code, id, program);
+		block.buttons["run"] = addRunButton(options, parentNode, block);
 	}
 	if (modes.includes(kModeWrite)) {
 		if (runnable && modes.includes(kModeShare) && window.mongo) {
@@ -478,10 +490,77 @@ function addLanguageButton(options, parentNode, code) {
 		block.buttons["undo"] = button;
 		setEditMode(options, block, button);
 	}
+	if (!modes.includes(kModeNoNumber)) {
+		var container = document.createElement("div");
+		container.className = "codeblock-container";
+		var flex = document.createElement("div");
+		flex.className = "codeblock-source";
+		container.appendChild(flex);
+		highlight.parentNode.insertBefore(container, highlight);
+
+		var numbersContainer = document.createElement("div");
+		var numbersPre = document.createElement("pre");
+		var numbersCode = document.createElement("code");
+		flex.appendChild(numbersContainer);
+		numbersContainer.className = "highlight codeblock-left";
+		numbersContainer.appendChild(numbersPre);
+		numbersPre.appendChild(numbersCode);
+		numbersPre.style.overflow = "hidden";
+		numbersPre.style.height = "100%";
+		numbersPre.className = "language-c";
+		numbersCode.className = "language-c";
+
+		highlight.className += " codeblock-right";
+		flex.appendChild(highlight);
+
+		var numbers = syncLineNumbers(block);
+		code.onscroll = function(e) {
+			numbers.scrollTop = e.target.scrollTop;
+		};
+		window.addEventListener("resize", function(e) {
+			syncLineNumbers(block);
+		});
+	}
+}
+
+function syncLineNumbers(block) {
+	var code = block.code;
+	var numbers = code.parentNode.parentNode.parentNode.querySelector(".codeblock-left > pre > code");
+	numbers.style.height = block.code.offsetHeight + "px";
+	var lines = 0;
+	var source = code.innerText;
+	var lineend = "\n";
+	var lastIndex = -1;
+	if (source) {
+		for (var i = 0; i < source.length; i++) {
+			if (source.charAt(i) === lineend) {
+				lastIndex = i;
+				lines++;
+			}
+		}
+		if (lastIndex + 1 < source.length) {
+			lines++;
+		}
+	}
+	if (lines === 0) {
+		lines = 1;
+	}
+	if (numbers.childNodes.length === lines) {
+		return numbers;
+	}
+	while (numbers.childNodes.length > lines) {
+		numbers.removeChild(numbers.lastChild);
+	}
+	while (numbers.childNodes.length < lines) {
+		var span = document.createElement("span");
+		span.innerText = (numbers.childNodes.length + 1) + "\n";
+		numbers.appendChild(span);
+	}
+	return numbers;
 }
 
 function setEditMode(options, block, undoButton) {
-	var code = block.element;
+	var code = block.code;
 	var lastSaveTime = new Date().getTime();
 	var lastInputTime = lastSaveTime;
 	var idleInterval = 2000; // 2s
@@ -561,7 +640,7 @@ function setEditMode(options, block, undoButton) {
 			undoButton.hidden = false;
 		}
 		lastInputTime = now;
-		updateCodeBlock(code, block.lang);
+		updateCodeBlock(block);
 	});
 	code.addEventListener('compositionstart', function(e) {
 		code.setAttribute("compositionstart", "true");
@@ -570,10 +649,11 @@ function setEditMode(options, block, undoButton) {
 		code.setAttribute("compositionstart", "false");
 		code.dispatchEvent(new Event('input', {bubbles:true}));
 	});
-	code.style.whiteSpace = 'pre-wrap';
 }
 
-function updateCodeBlock(code, lang, cursor) {
+function updateCodeBlock(block, cursor) {
+	var code = block.code;
+	var lang = block.lang;
 	if (codeblock.highlighter) {
 		var grammer = codeblock.highlighter.languages[exports.syntaxName(lang)];
 		if (grammer) {
@@ -585,9 +665,11 @@ function updateCodeBlock(code, lang, cursor) {
 			setCaret(code, cursor);
 		}
 	}
+	syncLineNumbers(block);
 }
 
-function addRunButton(options, parentNode, code, id, program) {
+function addRunButton(options, parentNode, block) {
+	var code = block.code;
 	var runIcon = options.runIcon;
 	var runningIcon = options.runningIcon;
 	var button = document.createElement("button");
@@ -603,23 +685,23 @@ function addRunButton(options, parentNode, code, id, program) {
 	});
 	button.addEventListener("click", function() {
 		button.innerHTML = runningIcon;
-		clearCodeOutput(code);
-		runProgram(id, program).then(
+		clearCodeOutput(block);
+		runProgram(block.id, block.program).then(
 			function(res) {
 				if (res.Errors) {
 					console.log(res.Errors);
-					createCodeOutput(options, code, [{
+					createCodeOutput(options, block, [{
 						Message: res.Errors,
 						Kind: exports.Stderr
 					}]);
 				} else {
-					createCodeOutput(options, code, res.Events);
+					createCodeOutput(options, block, res.Events);
 				}
 				button.blur();
 				button.innerHTML = runIcon;
 			},
 			function (error) {
-				createCodeOutput(options, code, [{
+				createCodeOutput(options, block, [{
 					Message: error + "",
 					Kind: exports.Stderr
 				}]);
@@ -650,10 +732,10 @@ function addUndoButton(options, parentNode, block) {
 			block.history.pop();
 		}
 		var last = block.history[block.history.length - 1];
-		block.element.innerText = last.source;
-		updateCodeBlock(block.element, block.lang, last.cursor);
+		block.code.innerText = last.source;
+		updateCodeBlock(block, last.cursor);
 		button.hidden = block.history.length <= 1;
-		clearCodeOutput(block.element);
+		clearCodeOutput(block);
 	});
 	parentNode.appendChild(button);
 	return button;
@@ -677,7 +759,7 @@ function addShareButton(options, parentNode, block) {
 		button.innerHTML = sharingIcon;
 		shareCode(options, {
 			lang: block.lang,
-			code: block.element.innerText,
+			code: block.code.innerText,
 		}).then(function(res) {
 			button.innerHTML = shareIcon;
 			button.blur();
@@ -687,7 +769,7 @@ function addShareButton(options, parentNode, block) {
 				return;
 			}
 			console.log("share code ok");
-			createShareAlert(block.element, res.url);
+			createShareAlert(block.code, res.url);
 		}).catch(function(e) {
 			console.log("share code error", e);
 			button.innerHTML = shareIcon;
@@ -709,12 +791,13 @@ function fakeShareCode(options, obj) {
 function shareCode(options, obj) {
 	//return fakeShareCode(options, obj);
 
-	if (obj.code.length > 8096) {
-		alert("代码过长，无法分享！");
-		return;
-	}
 	obj.time = new Date().getTime();
 	return new Promise(function(resolve, reject) {
+		if (obj.code.length > 65536) {
+			alert("代码过长，无法分享！");
+			resolve("source too long");
+			return;
+		}
 		mongo.send(mongo.actions.insertOne, {
 			collection: "share-code",
 			document: obj
@@ -773,7 +856,7 @@ function createShareAlert(code, url) {
 		'<strong>已分享至: </strong><span id="share-output-url" style="cursor: pointer;" ' +
 		"onclick=\"copyInnerText('#share-output-url', '#share-output-copy');\"></span> " +
 		"<button type=\"button\" class=\"btn btn-primary\" id=\"share-output-copy\" onclick=\"copyInnerText('#share-output-url', '#share-output-copy');\"" +
-		'>复制</span>;'
+		'>复制</span>';
 	createAlert(shareHTML, "success", function(container) {
 		document.getElementById("share-output-url").innerText = url;
 	});
@@ -821,26 +904,41 @@ function runProgram(id, program) {
 /**
  * clears code output
  */
-function clearCodeOutput(code) {
-	var child = code.parentNode.parentNode.querySelector('[for="' + code.id + '"]');
+function clearCodeOutput(block) {
+	var child = block.code.parentNode.parentNode.querySelector('[for="' + block.code.id + '"]');
 	if (child) {
-		code.parentNode.parentNode.removeChild(child);
+		block.code.parentNode.parentNode.removeChild(child);
+	}
+	if (!block.modes.includes(kModeNoNumber)) {
+		var container = block.code.parentNode.parentNode.parentNode;
+		for (var i = 0; i < container.childNodes.length; i++) {
+			container.childNodes[i].className.replace(" has-output", "");
+		}
 	}
 }
 
 /**
  * creates code output
  */
-function createCodeOutput(options, code, results) {
-	clearCodeOutput(code);
+function createCodeOutput(options, block, results) {
+	clearCodeOutput(block);
 	var child = document.createElement("pre");
-	child.setAttribute("for", code.id);
+	child.setAttribute("for", block.code.id);
 	var output = document.createElement("code");
 	child.appendChild(output);
 	if (options.outputPrefix && typeof options.outputPrefix === 'string') {
 		output.insertAdjacentHTML('beforeend', options.outputPrefix);
 	}
-	code.parentNode.after(child);
+	if (block.modes.includes(kModeNoNumber)) {
+		block.code.parentNode.after(child);
+	} else {
+		child.className = "codeblock-output";
+		var container = block.code.parentNode.parentNode.parentNode;
+		container.after(child);
+		for (var i = 0; i < container.childNodes.length; i++) {
+			container.childNodes[i].className += " has-output";
+		}
+	}
 	appendOutput(options, results, output, 0, false);
 }
 
@@ -927,7 +1025,6 @@ exports.init = function(options) {
 	options.shareButtonClass = options.shareButtonClass || "btn btn-light btn-code btn-code-share";
 	options.shareOutputClass = options.shareOutputClass || "code-share";
 
-	options.codeOutputClass = options.codeOutputClass || "code-output";
 	options.errorOutputStyle = options.errorOutputStyle || "color: red";
 	options.outputPrefix = getDefaultValue(options.outputPrefix, true);
 	if (options.outputPrefix && typeof options.outputPrefix !== 'string') {
@@ -1010,22 +1107,23 @@ exports.bindSelector = function(options) {
 			console.log("load shared code:", res);
 			code.setAttribute("contenteditable", "true");
 			block.lang = res.document.lang;
-			block.element.innerText = res.document.code;
+			block.code.innerText = res.document.code;
 			refreshEditor(block);
 		}).catch(function(e) {
 			code.innerText = "Load fail: " + e;
+			code.setAttribute("contenteditable", "true");
 		});
 	}
 }
 
 function refreshEditor(block) {
-	var code = block.element;
+	var code = block.code;
 	code.className = "language-" + exports.syntaxName(block.lang);
 	code.parentNode.className = "language-" + exports.syntaxName(block.lang);
 	code.setAttribute("data-lang", block.lang);
 	block.resetHistory();
-	updateCodeBlock(code, block.lang);
-	clearCodeOutput(code);
+	updateCodeBlock(block);
+	clearCodeOutput(block);
 	code.blur();
 	var undoButton = block.buttons["undo"];
 	if (undoButton) {
