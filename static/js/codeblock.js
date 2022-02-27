@@ -905,14 +905,14 @@ function runProgram(id, program) {
  * clears code output
  */
 function clearCodeOutput(block) {
-	var child = block.code.parentNode.parentNode.querySelector('[for="' + block.code.id + '"]');
+	var child = document.querySelector('[for-output="' + block.code.id + '"]');
 	if (child) {
-		block.code.parentNode.parentNode.removeChild(child);
+		child.parentNode.removeChild(child);
 	}
 	if (!block.modes.includes(kModeNoNumber)) {
 		var container = block.code.parentNode.parentNode.parentNode;
 		for (var i = 0; i < container.childNodes.length; i++) {
-			container.childNodes[i].className.replace(" has-output", "");
+			container.childNodes[i].className = container.childNodes[i].className.replaceAll(" has-output", "");
 		}
 	}
 }
@@ -923,7 +923,7 @@ function clearCodeOutput(block) {
 function createCodeOutput(options, block, results) {
 	clearCodeOutput(block);
 	var child = document.createElement("pre");
-	child.setAttribute("for", block.code.id);
+	child.setAttribute("for-output", block.code.id);
 	var output = document.createElement("code");
 	child.appendChild(output);
 	if (options.outputPrefix && typeof options.outputPrefix === 'string') {
