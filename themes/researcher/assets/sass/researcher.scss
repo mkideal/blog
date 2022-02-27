@@ -8,6 +8,7 @@ $red: {{ .Param "style.colorRed" | default "#dc3545" }};
 
 // Font
 $font-family: {{ .Param "style.fontFamily" | default "Inconsolata" }};
+$code-font-family: {{ .Param "style.codeFontFamily" | default "Inconsolata" }};
 
 // Margins
 $y-small: 0.6rem;
@@ -166,9 +167,6 @@ pre code * {
 		border-radius: 8px;
 		border: 1px solid #d8d8d8;
 		width: 100%;
-		/*
-		white-space: pre-wrap;
-		*/
 		word-break: break-all;
 		outline: 0px solid transparent;
 	}
@@ -181,8 +179,8 @@ pre code * {
             padding: 8px 8px;
         }
     }
-	code[class*=language-], pre[class*=language-] {
-		font-family: $font-family;
+	code[class*=language-], pre[class*=language-] * {
+		font-family: $code-font-family;
 	}
 }
 #footer {
